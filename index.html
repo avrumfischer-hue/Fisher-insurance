@@ -3,414 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BrokerDesk — Professional P&C Insurance Workspace</title>
+<title>BrokerDesk — Your P&C Broker Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 :root{
 --primary:#3B82F6;--primary-hover:#2563EB;--primary-light:#EFF6FF;--primary-dark:#1E40AF;
---success:#16A34A;--success-bg:#DCFCE7;--success-text:#166534;--success-dark:#15803d;
+--success:#16A34A;--success-bg:#DCFCE7;--success-text:#166534;
 --warning:#F59E0B;--warning-bg:#FEF3C7;--warning-text:#B45309;
 --danger:#DC2626;--danger-bg:#FEE2E2;--danger-text:#991B1B;
 --text:#1E293B;--text-mid:#475569;--text-muted:#64748B;--text-light:#94A3B8;
---bg:#F9FAFB;--surface:#FFFFFF;--overlay:#F1F5F9;
---border:#E2E8F0;--border-strong:#CBD5E1;
---r-sm:4px;--r-md:6px;--r-lg:8px;
+--bg:#F9FAFB;--surface:#FFFFFF;--overlay:#F1F5F9;--slate:#F8FAFC;
+--border:#E2E8F0;--border-strong:#CBD5E1;--border-dark:#94A3B8;
+--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--radius-xl:12px;
 }
-html,body{height:100%;font-family:'Inter',-apple-system,sans-serif;color:var(--text);background:var(--bg);line-height:1.6}
-body{display:flex;flex-direction:column}
-#auth-screen{display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,var(--primary-light) 0%,var(--bg) 100%);align-items:center;justify-content:center;z-index:2000}
-#auth-screen.hidden{display:none !important}
-.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-width:420px;padding:48px;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
-.auth-logo{display:flex;gap:16px;align-items:center;margin-bottom:32px}
-.auth-mark{width:48px;height:48px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
-.auth-h1{font-size:22px;font-weight:700;margin-bottom:6px}
-.auth-sub{font-size:13px;color:var(--text-muted);margin-bottom:24px}
-.form-group{margin-bottom:16px}
-.form-label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
-.form-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-family:inherit;color:var(--text);background:var(--surface)}
-.form-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.btn{padding:10px 16px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);font-weight:500;font-size:14px;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-.btn:hover{background:var(--overlay);border-color:var(--border-strong)}
-.btn.primary{background:var(--primary);color:white;border-color:var(--primary);width:100%;margin-bottom:16px}
-.btn.primary:hover{background:var(--primary-hover)}
-.auth-error{background:var(--danger-bg);color:var(--danger-text);padding:12px;border-radius:6px;font-size:13px;margin-bottom:16px;display:none}
-.auth-error.show{display:block}
-.auth-toggle{font-size:13px;text-align:center;color:var(--text-muted)}
-.auth-toggle a{color:var(--primary);text-decoration:none;font-weight:600;cursor:pointer}
 
-#app{display:flex;width:100%;height:100%;flex:1}
+html,body{height:100%;margin:0;padding:0;font-family:'Segoe UI','Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+
+body{display:flex;overflow:hidden}
+
+#auth-screen{display:flex;position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);align-items:center;justify-content:center;z-index:9999}
+#auth-screen.hidden{display:none !important}
+
+.auth-card{background:white;width:100%;max-width:420px;border-radius:var(--radius-xl);box-shadow:0 20px 60px rgba(0,0,0,0.12);padding:48px 40px}
+
+.auth-logo{display:flex;gap:12px;align-items:center;margin-bottom:32px}
+.auth-logo-mark{width:48px;height:48px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+.auth-wordmark{font-size:20px;font-weight:700;color:var(--text)}
+.auth-tagline{font-size:12px;color:var(--text-muted)}
+
+.auth-heading{font-size:22px;font-weight:700;margin:0 0 8px 0;color:var(--text)}
+.auth-subheading{font-size:13px;color:var(--text-muted);margin:0 0 24px 0}
+
+.form-row{margin-bottom:16px}
+.form-row label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.form-row input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:14px;font-family:inherit;color:var(--text)}
+.form-row input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
+
+.btn{padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius-md);background:white;color:var(--text);font-weight:500;font-size:14px;cursor:pointer;transition:all 0.2s}
+.btn:hover{background:var(--overlay);border-color:var(--border-strong)}
+.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.primary:hover{background:var(--primary-hover)}
+.btn.primary.full{width:100%;display:block;margin-bottom:16px}
+
+.auth-error{background:var(--danger-bg);border:1px solid #fca5a5;color:var(--danger-text);padding:12px 16px;border-radius:var(--radius-md);font-size:13px;margin-bottom:20px;display:none;flex-align:center;gap:8px}
+.auth-error.show{display:flex}
+.auth-error svg{width:16px;height:16px;flex-shrink:0}
+
+.auth-switch{font-size:13px;text-align:center;color:var(--text-muted);margin:0}
+.auth-switch a{color:var(--primary);text-decoration:none;font-weight:600;cursor:pointer}
+
+#app{display:flex;width:100%;height:100%;background:var(--bg)}
 #app.hidden{display:none !important}
-.sidebar{width:280px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+
+.sidebar{width:280px;background:white;border-right:1px solid var(--border);display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(0,0,0,0.04);overflow:hidden}
+
 .sidebar-header{padding:24px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center}
-.sidebar-logo{width:40px;height:40px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px}
-.sidebar-title{font-weight:700;font-size:16px;color:var(--text)}
-.sidebar-nav{flex:1;overflow-y:auto;padding:16px 0}
-.nav-group{margin:12px 0}
-.nav-label{padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted)}
-.nav-item{padding:11px 16px;margin:0 8px;border-radius:6px;cursor:pointer;font-weight:500;font-size:14px;color:var(--text-muted);transition:all 0.15s;white-space:nowrap}
+.sidebar-header .auth-logo-mark{width:40px;height:40px;font-size:16px}
+.sidebar-title{font-weight:700;font-size:16px;margin:0}
+
+.sidebar-nav{flex:1;overflow-y:auto;padding:16px 0;min-height:0}
+
+.nav-group{margin-bottom:16px}
+.nav-group:first-child{margin-top:0}
+
+.nav-label{padding:10px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px}
+
+.nav-item{display:block;padding:10px 16px;margin:0 8px;border-radius:var(--radius-md);cursor:pointer;font-size:14px;color:var(--text-muted);font-weight:500;transition:all 0.15s;white-space:nowrap;border:none;background:none;text-align:left;width:calc(100% - 16px)}
 .nav-item:hover{background:var(--primary-light);color:var(--primary)}
 .nav-item.active{background:var(--primary-light);color:var(--primary);font-weight:600}
 
-.main-area{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.topbar{height:64px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;gap:32px;box-shadow:0 2px 4px rgba(0,0,0,0.04)}
-.topbar-title{font-size:24px;font-weight:700;color:var(--text);flex:1}
-.topbar-actions{display:flex;gap:12px;align-items:center}
-
-.content{flex:1;overflow-y:auto;padding:32px}
 .page{display:none}
 .page.active{display:block}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:24px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
-.card-header{padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.card-title{font-size:16px;font-weight:600;color:var(--text);margin:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+#topbar{height:64px;background:white;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 4px rgba(0,0,0,0.04);flex-shrink:0}
+
+#page-title{font-size:24px;font-weight:700;margin:0;color:var(--text)}
+
+#topbar-right{display:flex;gap:16px;align-items:center}
+
+.content{flex:1;overflow-y:auto;padding:32px}
+
+.card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:24px;box-shadow:0 1px 3px rgba(0,0,0,0.05);overflow:hidden}
+
+.card-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.card-title{font-size:16px;font-weight:600;margin:0;color:var(--text)}
+
 .card-body{padding:24px}
 
-.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:32px}
-.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;text-align:center}
-.metric-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:12px}
-.metric-value{font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px}
-.metric-change{font-size:12px;color:var(--success-text);font-weight:600}
+.stat-card{background:white;border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center;transition:all 0.2s}
+.stat-card:hover{border-color:var(--border-strong);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
 
-.section-title{font-size:20px;font-weight:700;margin:32px 0 20px 0;color:var(--text)}
-.section-title:first-of-type{margin-top:0}
+.s-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;color:var(--text-muted);margin-bottom:12px}
+.s-val{font-size:32px;font-weight:700;color:var(--text);margin-bottom:8px}
+.s-sub{font-size:12px;color:var(--text-muted);font-weight:600}
 
 table{width:100%;border-collapse:collapse;font-size:14px}
 thead{background:var(--overlay)}
-th{text-align:left;padding:12px;border:1px solid var(--border);font-weight:600;color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:0.3px}
-td{padding:12px;border:1px solid var(--border);color:var(--text)}
+th{text-align:left;padding:12px;font-weight:600;color:var(--text-muted);font-size:12px;text-transform:uppercase;letter-spacing:0.3px;border-bottom:1px solid var(--border)}
+td{padding:12px;border-bottom:1px solid var(--border);color:var(--text)}
 tbody tr:hover{background:var(--primary-light)}
+
+.badge{display:inline-block;padding:4px 8px;border-radius:var(--radius-md);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
+.badge.active{background:var(--success-bg);color:var(--success-text)}
+.badge.pending{background:var(--warning-bg);color:var(--warning-text)}
+.badge.expired{background:var(--danger-bg);color:var(--danger-text)}
+
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.input-group input,.input-group select,.input-group textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:14px;font-family:inherit;color:var(--text)}
+.input-group input:focus,.input-group select:focus,.input-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,0.1)}
 
 .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:1500}
 .modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:12px;width:90%;max-width:600px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 50px rgba(0,0,0,0.15)}
-.modal-header{padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:18px;font-weight:700;margin:0}
-.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);line-height:1}
-.modal-body{flex:1;overflow-y:auto;padding:24px}
-.modal-footer{padding:24px;border-top:1px solid var(--border);display:flex;gap:12px;justify-content:flex-end}
 
-@media (max-width:1200px){.metrics-grid{grid-template-columns:repeat(2,1fr)}}
+.modal{background:white;border-radius:var(--radius-xl);width:90%;max-width:600px;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 50px rgba(0,0,0,0.15)}
+
+.modal-header{padding:24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:18px;font-weight:700;margin:0;color:var(--text)}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);line-height:1;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+
+.modal-body{flex:1;overflow-y:auto;padding:24px}
+.modal-footer{padding:20px 24px;border-top:1px solid var(--border);display:flex;gap:12px;justify-content:flex-end}
+
+.t-mono{font-family:'Monaco','Courier New',monospace;font-size:13px}
+.t-muted{color:var(--text-muted)}
+.t-name{font-weight:600;color:var(--text)}
+
+@media (max-width:1024px){
+  #topbar{padding:0 16px}
+  .content{padding:16px}
+}
+
 @media (max-width:768px){
   .sidebar{width:70px}
   .sidebar-title{display:none}
   .nav-label{display:none}
-  .nav-item{padding:12px 8px;margin:0 4px}
-  .topbar{padding:0 16px}
-  .content{padding:16px}
-  .metrics-grid{grid-template-columns:1fr}
-  .card-header{flex-direction:column;align-items:flex-start;gap:12px}
+  .nav-item{padding:12px 8px;margin:0 4px;width:calc(100% - 8px)}
 }
 </style>
-</head>
-<body>
-
-<div id="auth-screen">
-  <div class="auth-box">
-    <div class="auth-logo">
-      <div class="auth-mark">BD</div>
-      <div>
-        <div class="auth-h1">BrokerDesk</div>
-        <div class="auth-sub">Professional P&C Insurance Workspace</div>
-      </div>
-    </div>
-    <div id="auth-error" class="auth-error"></div>
-    <div id="auth-login" class="show">
-      <h2 class="auth-h1">Welcome back</h2>
-      <p class="auth-sub">Sign in to your workspace</p>
-      <div id="auth-error" class="auth-error"></div>
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input type="email" id="login-email" class="form-input" placeholder="you@agency.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="login-password" class="form-input" placeholder="••••••••">
-      </div>
-      <button class="btn primary" id="login-btn" onclick="signIn()">Sign in</button>
-      <p class="auth-toggle">No account? <a onclick="showAuthTab('signup')">Create one</a></p>
-    </div>
-    <div id="auth-signup">
-      <h2 class="auth-h1">Create account</h2>
-      <p class="auth-sub">Get started with BrokerDesk</p>
-      <div id="auth-error-signup" class="auth-error"></div>
-      <div class="form-group">
-        <label class="form-label">Full name</label>
-        <input type="text" id="signup-name" class="form-input" placeholder="Your name">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Agency name</label>
-        <input type="text" id="signup-agency" class="form-input" placeholder="Your agency name (optional)">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email address</label>
-        <input type="email" id="signup-email" class="form-input" placeholder="you@agency.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" id="signup-password" class="form-input" placeholder="••••••••">
-      </div>
-      <button class="btn primary" id="signup-btn" onclick="signUp()">Create account</button>
-      <p class="auth-toggle">Already have one? <a onclick="showAuthTab('login')">Sign in</a></p>
-    </div>
-  </div>
-</div>
-
-<div id="app">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-logo">BD</div>
-      <div class="sidebar-title">BrokerDesk</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-group">
-        <div class="nav-label">WORK</div>
-        <div class="nav-item active" onclick="showPage('dashboard')">📊 Today</div>
-        <div class="nav-item" onclick="showPage('renewals')">🎯 Renewals</div>
-        <div class="nav-item" onclick="showPage('prospects')">🌱 New Business</div>
-        <div class="nav-item" onclick="showPage('servicequeue')">🔧 Service Queue</div>
-        <div class="nav-item" onclick="showPage('tasks')">✓ Tasks</div>
-      </div>
-      <div class="nav-group">
-        <div class="nav-label">BOOK</div>
-        <div class="nav-item" onclick="showPage('clients')">👥 Clients</div>
-        <div class="nav-item" onclick="showPage('carriers')">🏢 Carriers</div>
-        <div class="nav-item" onclick="showPage('coi')">📋 COI</div>
-        <div class="nav-item" onclick="showPage('claims')">⚠️ Claims</div>
-      </div>
-      <div class="nav-group">
-        <div class="nav-label">ADMIN</div>
-        <div class="nav-item" onclick="showPage('revenue')">💰 Commissions</div>
-        <div class="nav-item" onclick="showPage('reminders')">🔔 Reminders</div>
-        <div class="nav-item" onclick="showPage('reports')">📈 Reports</div>
-        <div class="nav-item" onclick="showPage('settings')">⚙️ Settings</div>
-      </div>
-    </nav>
-  </div>
-
-  <div class="main-area">
-    <div class="topbar">
-      <h1 class="topbar-title" id="page-title">Dashboard</h1>
-      <div class="topbar-actions">
-        <button class="btn primary" onclick="openAccountModal()" style="width:auto">+ Add Account</button>
-      </div>
-    </div>
-
-    <div class="content">
-      <!-- DASHBOARD PAGE -->
-      <div id="dashboard" class="page active">
-        <div id="dash-greeting" style="font-size:18px;font-weight:600;margin-bottom:24px;color:var(--text)">Good afternoon</div>
-        
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Book Premium</div>
-            <div class="metric-value" id="dash-commission">$0</div>
-            <div class="metric-change" id="dash-commission-sub">—</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Accounts</div>
-            <div class="metric-value" id="dash-atrisk">0</div>
-            <div class="metric-change" id="dash-atrisk-sub">Active</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Prospects</div>
-            <div class="metric-value" id="dash-crosssell">0</div>
-            <div class="metric-change" id="dash-crosssell-sub">In pipeline</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Renewals</div>
-            <div class="metric-value" id="dash-carriers">0</div>
-            <div class="metric-change" id="dash-carriers-sub">Next 90 days</div>
-          </div>
-        </div>
-
-        <h2 class="section-title">Today's Action Items</h2>
-        <div class="card">
-          <div class="card-body" id="dash-health">Loading tasks...</div>
-        </div>
-
-        <h2 class="section-title">Book Health</h2>
-        <div class="card">
-          <div class="card-body" id="dash-bookhealth">Loading analytics...</div>
-        </div>
-
-        <h2 class="section-title">Key Dates</h2>
-        <div class="card">
-          <div class="card-body" id="dash-key-dates">Loading...</div>
-        </div>
-      </div>
-
-      <!-- CLIENTS PAGE -->
-      <div id="clients" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Clients & Policies</h2>
-            <button class="btn primary" onclick="openAccountModal()" style="width:auto">+ New Account</button>
-          </div>
-          <div class="card-body">
-            <div style="margin-bottom:16px">
-              <input type="text" id="c-search" class="form-input" placeholder="Search clients...">
-            </div>
-            <div id="accounts-list">Loading...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PROSPECTS PAGE -->
-      <div id="prospects" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">New Business Pipeline</h2>
-            <button class="btn primary" onclick="openProspectModal()" style="width:auto">+ New Prospect</button>
-          </div>
-          <div class="card-body">
-            <div style="margin-bottom:16px">
-              <input type="text" id="p-search" class="form-input" placeholder="Search prospects...">
-            </div>
-            <div id="prospects-list">Loading...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RENEWALS PAGE -->
-      <div id="renewals" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Renewal Pipeline</h2>
-          </div>
-          <div class="card-body" id="renewals-list">Loading...</div>
-        </div>
-      </div>
-
-      <!-- CARRIERS PAGE -->
-      <div id="carriers" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Carriers & Markets</h2>
-            <button class="btn primary" onclick="openCarrierModal()" style="width:auto">+ Add Carrier</button>
-          </div>
-          <div class="card-body">
-            <div style="margin-bottom:16px">
-              <input type="text" id="car-search" class="form-input" placeholder="Search carriers...">
-            </div>
-            <table><thead><tr><th>Carrier</th><th>Underwriter</th><th>Lines</th><th>Premium</th><th>Policies</th></tr></thead><tbody id="car-tbody">Loading...</tbody></table>
-          </div>
-        </div>
-      </div>
-
-      <!-- TASKS PAGE -->
-      <div id="tasks" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Tasks</h2>
-            <button class="btn primary" onclick="openTaskModal()" style="width:auto">+ New Task</button>
-          </div>
-          <div class="card-body">
-            <div id="tasks-list">Loading...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- COI PAGE -->
-      <div id="coi" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Certificates of Insurance</h2>
-          </div>
-          <div class="card-body">
-            <table><thead><tr><th>Client</th><th>Holder</th><th>Expires</th><th>Status</th><th></th></tr></thead><tbody id="coi-tbody">Loading...</tbody></table>
-          </div>
-        </div>
-      </div>
-
-      <!-- CLAIMS PAGE -->
-      <div id="claims" class="page">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">Claims</h2>
-            <button class="btn primary" onclick="openClaimModal()" style="width:auto">+ Log Claim</button>
-          </div>
-          <div class="card-body">
-            <table><thead><tr><th>Client</th><th>Date</th><th>Description</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody id="claims-tbody">Loading...</tbody></table>
-          </div>
-        </div>
-      </div>
-
-      <!-- REVENUE PAGE -->
-      <div id="revenue" class="page">
-        <div class="card">
-          <div class="card-body" id="rev-stats"></div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Commission Report</h2></div>
-          <div class="card-body" id="report-commission">Loading...</div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Revenue by Carrier</h2></div>
-          <div class="card-body" id="rev-carriers">Loading...</div>
-        </div>
-      </div>
-
-      <!-- REMINDERS PAGE -->
-      <div id="reminders" class="page">
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Reminders & Follow-ups</h2></div>
-          <div class="card-body" id="reminders-list">Loading...</div>
-        </div>
-      </div>
-
-      <!-- REPORTS PAGE -->
-      <div id="reports" class="page">
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Summary</h2></div>
-          <div class="card-body" id="report-summary">Loading...</div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Pipeline Report</h2></div>
-          <div class="card-body" id="report-pipeline">Loading...</div>
-        </div>
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Claims & Risk</h2></div>
-          <div class="card-body" id="report-claims">Loading...</div>
-        </div>
-      </div>
-
-      <!-- SETTINGS PAGE -->
-      <div id="settings" class="page">
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Settings</h2></div>
-          <div class="card-body" id="settings-root">Loading...</div>
-        </div>
-      </div>
-
-      <!-- SERVICE QUEUE PAGE -->
-      <div id="servicequeue" class="page">
-        <div class="card">
-          <div class="card-header"><h2 class="card-title">Service Queue</h2></div>
-          <div class="card-body" id="servicequeue-root">Loading...</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="modal-overlay" class="modal-overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 class="modal-title" id="modal-title">Modal</h2>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn primary" id="modal-submit" onclick="submitModal()">Save</button>
-    </div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+</style>
 </head>
 <body>
 <!-- AUTH -->
@@ -1142,7 +877,7 @@ function badge(s){
 // ended — this replaces the old single 'Lapsed' catch-all so reporting can still
 // tell Cancelled / Non-Renewed / Expired apart without breaking every "is this
 // policy still active" check across the app.
-const TERMINAL_POLICY_STATUSES=['Lapsed','Cancelled','Canceled','Non-Renewed','Expired'];
+const TERMINAL_POLICY_STATUSES=['Lapsed','Cancelled','Non-Renewed','Expired'];
 const isTerminalStatus=s=>TERMINAL_POLICY_STATUSES.includes(s);
 function commRate(p){
   const hasRenewed=Array.isArray(p.term_history)&&p.term_history.length>0;
@@ -1804,8 +1539,7 @@ function renderDash(){
   const firstName=(state.brokerName||'').trim().split(' ')[0];
   const greetEl=$('dash-greeting');if(greetEl)greetEl.textContent=timeGreeting+(firstName?', '+firstName:'');
   const active=state.policies.filter(p=>!isTerminalStatus(p.status));
-  const parentAccounts=state.clients.filter(c=>!c.parent_id);
-  const totalPrem=parentAccounts.reduce((sum,parent)=>{const childIds=state.clients.filter(ch=>ch.parent_id===parent.id).map(ch=>ch.id);const allIds=[parent.id,...childIds];const pols=active.filter(p=>allIds.includes(p.client_id));return sum+pols.reduce((a,p)=>a+Number(p.premium||0),0);},0);
+  const totalPrem=active.reduce((a,p)=>a+Number(p.premium||0),0);
   const totalComm=active.reduce((a,p)=>a+Math.round(Number(p.premium||0)*commRate(p)/100),0);
   const paidComm=state.commissions.reduce((a,c)=>a+Number(c.amount||0),0);
   const openT=state.tasks.filter(t=>!t.done).length;
@@ -3877,7 +3611,6 @@ function renderRevenue(){
   const active=state.policies.filter(p=>!isTerminalStatus(p.status));
   const totalPrem=active.reduce((a,p)=>a+Number(p.premium||0),0);
   const totalComm=active.reduce((a,p)=>a+Math.round(Number(p.premium||0)*commRate(p)/100),0);
-  const parentClients=state.clients.filter(c=>!c.parent_id);
   const renewPrem=state.policies.filter(p=>p.status==='Renewal').reduce((a,p)=>a+Number(p.premium||0),0);
   const paidComm=state.commissions.reduce((a,c)=>a+Number(c.amount||0),0);
   $('rev-stats').innerHTML=[
@@ -3902,10 +3635,8 @@ function renderRevenue(){
   const lines={};active.forEach(p=>{const l=p.line||'?';lines[l]=(lines[l]||0)+Number(p.premium||0);});
   const maxL=Math.max(...Object.values(lines),1);
   $('rev-lines').innerHTML=`<div class="bar-chart">`+Object.entries(lines).sort((a,b)=>b[1]-a[1]).map(([l,v])=>`<div class="bar-row"><div class="bar-fill" style="width:${Math.round(v/maxL*100)}%;background:#F0EEF7"></div><span class="bar-label">${l}</span><span class="bar-val">${fmt(v)}</span></div>`).join('')+'</div>';
-  $('rev-tbody').innerHTML=state.clients.filter(c=>!c.parent_id).map(c=>{
-    const childIds=state.clients.filter(ch=>ch.parent_id===c.id).map(ch=>ch.id);
-    const allIds=[c.id,...childIds];
-    const pols=active.filter(p=>allIds.includes(p.client_id));if(!pols.length)return'';
+  $('rev-tbody').innerHTML=state.clients.map(c=>{
+    const pols=active.filter(p=>p.client_id===c.id);if(!pols.length)return'';
     const cPrem=pols.reduce((a,p)=>a+Number(p.premium||0),0);
     const rowComms=pols.map(p=>Math.round(Number(p.premium||0)*commRate(p)/100));
     const cComm=rowComms.reduce((a,c2)=>a+c2,0);
@@ -4087,8 +3818,7 @@ function renderReports(){
   $('report-summary').innerHTML=`<table style="width:100%">${[['Total accounts',state.clients.length],['Active policies',active.length],['Total book premium',fmt(totalPrem)],['Est. annual commission',fmt(totalComm)],['Commission received',fmt(paidComm)],['Prospects in pipeline',state.prospects.filter(p=>p.stage!=='Lost').length],['Open tasks',state.tasks.filter(t=>!t.done).length],['COIs expiring 30d',state.cois.filter(c=>daysDiff(c.expiry)<=30&&daysDiff(c.expiry)>=0).length]].map(([l,v])=>`<tr><td style="padding:7px 0;color:var(--text-mid);font-size:13px">${l}</td><td style="text-align:right;font-weight:600;font-size:13px">${v}</td></tr>`).join('')}</table>`;
   const renewals=state.policies.filter(p=>daysDiff(p.expiry)<=90&&!isTerminalStatus(p.status)).sort((a,b)=>daysDiff(a.expiry)-daysDiff(b.expiry));
   $('report-renewals').innerHTML=renewals.length?`<table style="width:100%"><thead><tr><th style="text-align:left;padding:6px 0;font-size:11px;color:var(--text-muted)">Account</th><th style="text-align:left;padding:6px 0;font-size:11px;color:var(--text-muted)">Line</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Expiry</th></tr></thead><tbody>${renewals.map(p=>{const c=state.clients.find(x=>x.id===p.client_id);const d=daysDiff(p.expiry);return`<tr><td style="padding:5px 0;font-size:12px">${c?c.business:p.insured}</td><td style="padding:5px 0;font-size:12px;color:var(--text-muted)">${p.line}</td><td style="padding:5px 0;font-size:12px;text-align:right;font-weight:500;color:${d<=14?'var(--red-text)':d<=30?'var(--amber-text)':'var(--text-muted)'}">${fmtDate(p.expiry)}</td></tr>`;}).join('')}</tbody></table>`:emptyHTML("No renewals in next 90 days","All policies are current ✓","check");
-  const accountPremiums=state.clients.filter(c=>!c.parent_id).map(parent=>{const childIds=state.clients.filter(ch=>ch.parent_id===parent.id).map(ch=>ch.id);const allIds=[parent.id,...childIds];const pols=active.filter(p=>allIds.includes(p.client_id));const prem=pols.reduce((a,p)=>a+Number(p.premium||0),0);const comm=pols.reduce((a,p)=>a+Math.round(Number(p.premium||0)*commRate(p)/100),0);return{parent,prem,comm,polCount:pols.length};}).filter(x=>x.polCount>0).sort((a,b)=>b.prem-a.prem);
-  $('report-commission').innerHTML=`<table style="width:100%"><thead><tr><th style="text-align:left;padding:6px 0;font-size:11px;color:var(--text-muted)">Account</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Premium</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Commission</th></tr></thead><tbody>${accountPremiums.slice(0,10).map(({parent,prem,comm})=>`<tr><td style="padding:5px 0;font-size:12px">${parent.business||parent.name}</td><td style="padding:5px 0;font-size:12px;text-align:right;color:var(--text-muted)">${fmt(prem)}</td><td style="padding:5px 0;font-size:12px;text-align:right;font-weight:600;color:var(--green-dark)">${fmt(comm)}</td></tr>`).join('')}<tr style="border-top:2px solid var(--border)"><td style="padding:7px 0;font-weight:700;font-size:12px">Total</td><td style="padding:7px 0;text-align:right;font-weight:700;font-size:12px">${fmt(totalPrem)}</td><td style="padding:7px 0;text-align:right;font-weight:700;font-size:12px;color:var(--green-dark)">${fmt(totalComm)}</td></tr></tbody></table>`;
+  $('report-commission').innerHTML=`<table style="width:100%"><thead><tr><th style="text-align:left;padding:6px 0;font-size:11px;color:var(--text-muted)">Account</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Premium</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Commission</th></tr></thead><tbody>${active.sort((a,b)=>Number(b.premium)-Number(a.premium)).slice(0,10).map(p=>{const c=state.clients.find(x=>x.id===p.client_id);const comm=Math.round(Number(p.premium||0)*commRate(p)/100);return`<tr><td style="padding:5px 0;font-size:12px">${c?c.business:p.insured}</td><td style="padding:5px 0;font-size:12px;text-align:right;color:var(--text-muted)">${fmt(p.premium)}</td><td style="padding:5px 0;font-size:12px;text-align:right;font-weight:600;color:var(--green-dark)">${fmt(comm)}</td></tr>`;}).join('')}<tr style="border-top:2px solid var(--border)"><td style="padding:7px 0;font-weight:700;font-size:12px">Total</td><td style="padding:7px 0;text-align:right;font-weight:700;font-size:12px">${fmt(totalPrem)}</td><td style="padding:7px 0;text-align:right;font-weight:700;font-size:12px;color:var(--green-dark)">${fmt(totalComm)}</td></tr></tbody></table>`;
   $('report-pipeline').innerHTML=`<table style="width:100%"><thead><tr><th style="text-align:left;padding:6px 0;font-size:11px;color:var(--text-muted)">Stage</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Count</th><th style="text-align:right;padding:6px 0;font-size:11px;color:var(--text-muted)">Est. premium</th></tr></thead><tbody>${['Lead','Quoted','Bound','Lost'].map(s=>{const items=state.prospects.filter(p=>p.stage===s);const prem=items.reduce((a,p)=>a+Number(p.premium||0),0);return`<tr><td style="padding:7px 0">${badge(s)}</td><td style="padding:7px 0;text-align:right;font-weight:600;font-size:13px">${items.length}</td><td style="padding:7px 0;text-align:right;font-size:12px;color:var(--text-muted)">${prem?fmt(prem):'—'}</td></tr>`;}).join('')}</tbody></table>`;
   const statusClass={Open:'badge-renewal',Pending:'badge-pending',Closed:'badge-active',Denied:'badge-declined'};
   const openClaims=state.claims.filter(c=>c.status==='Open'||c.status==='Pending');
@@ -5227,8 +4957,6 @@ function lineOpts(){
   ];
   return groups.map(g=>`<optgroup label="${g.label}">${g.lines.map(l=>`<option>${l}</option>`).join('')}</optgroup>`).join('');
 }
-</script>
-</body>
 </script>
 </body>
 </html>
