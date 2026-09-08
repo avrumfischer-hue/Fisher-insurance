@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrokerDesk - Sales Central</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #0066CC;
+  --primary-dark: #003D99;
+  --primary-light: #E8F4FF;
+  --text-dark: #171C1F;
+  --text-light: #5C6F7B;
+  --text-muted: #8C9BA8;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F7FA;
+  --border: #D4DADF;
+  --success: #04844B;
+  --warning: #C2741D;
+  --danger: #BA0517;
+}
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.5; color: var(--text-dark); background: var(--bg-secondary); }
+body { display: flex; flex-direction: column; }
+.top-bar { height: 56px; background: var(--primary); border-bottom: 1px solid var(--primary-dark); display: flex; align-items: center; padding: 0 24px; gap: 24px; color: white; }
+.logo { font-weight: 700; font-size: 16px; }
+.search-box { flex: 0 1 300px; display: flex; }
+.search-box input { flex: 1; padding: 8px 12px; border: none; border-radius: 4px 0 0 4px; font-size: 13px; }
+.search-box button { padding: 8px 12px; background: var(--primary-dark); color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+.user-menu { margin-left: auto; }
+#main { display: flex; flex: 1; }
+.sidebar { width: 256px; background: var(--bg-primary); border-right: 1px solid var(--border); overflow-y: auto; }
+.sidebar-section { padding: 0; }
+.sidebar-header { padding: 16px; font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.sidebar-item { padding: 10px 16px; cursor: pointer; color: var(--text-light); border-left: 3px solid transparent; }
+.sidebar-item:hover { background: var(--bg-secondary); }
+.sidebar-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 600; background: var(--primary-light); }
+.content { flex: 1; display: flex; flex-direction: column; }
+.page-header { padding: 20px 24px; background: var(--bg-primary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.page-title { font-size: 20px; font-weight: 700; }
+.breadcrumb { font-size: 12px; color: var(--text-light); margin-bottom: 8px; }
+.page-content { flex: 1; overflow-y: auto; padding: 24px; }
+.grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.kpi-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; padding: 16px; text-align: center; }
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--primary); }
+.kpi-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.list-view { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; }
+.list-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.list-title { font-weight: 700; }
+.list-body { }
+.list-row { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.list-row:hover { background: var(--bg-secondary); }
+.list-row.active { background: var(--primary-light); border-left: 3px solid var(--primary); }
+.row-main { }
+.row-name { font-weight: 600; }
+.row-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.row-value { text-align: right; font-weight: 600; }
+.detail-page { display: grid; grid-template-columns: 1fr 280px; gap: 20px; }
+.detail-main { }
+.detail-sidebar { }
+.panel { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 20px; }
+.panel-header { padding: 12px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.panel-body { padding: 16px; }
+.field-group { margin-bottom: 16px; }
+.field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.field-value { font-size: 13px; color: var(--text-dark); }
+.entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.entity-tile { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 4px; padding: 12px; cursor: pointer; text-align: center; }
+.entity-tile:hover { border-color: var(--primary); background: var(--primary-light); }
+.entity-icon { font-size: 24px; margin-bottom: 8px; }
+.entity-name { font-weight: 600; font-size: 12px; }
+.entity-type { font-size: 10px; color: var(--text-light); margin-top: 4px; }
+.activity-timeline { }
+.activity-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
+.activity-icon { font-size: 16px; flex-shrink: 0; }
+.activity-content { flex: 1; }
+.activity-title { font-weight: 600; }
+.activity-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.activity-text { font-size: 12px; margin-top: 4px; }
+.related-list { }
+.related-item { padding: 10px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 12px; }
+.related-item:hover { background: var(--bg-secondary); cursor: pointer; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.badge-prospect { background: #FFE8D6; color: var(--warning); }
+.badge-qualified { background: #D4F4E8; color: var(--success); }
+.badge-proposal { background: #B5DEFF; color: var(--primary); }
+.badge-won { background: #D4F4E8; color: var(--success); }
+.button { padding: 8px 12px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-dark); border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px; }
+.button:hover { background: var(--bg-secondary); }
+.button-primary { background: var(--primary); color: white; border-color: var(--primary); }
+.button-primary:hover { background: var(--primary-dark); }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg-primary); border-radius: 4px; width: 90%; max-width: 600px; max-height: 90vh; overflow: auto; }
+.modal-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; font-family: inherit; }
+.hidden { display: none !important; }
+@media (max-width: 768px) {
+  .sidebar { width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
+  .detail-page { grid-template-columns: 1fr; }
+  .detail-sidebar { display: none; }
+  .grid-3col { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">📊 BrokerDesk</div>
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="Search accounts, entities, policies..." />
+    <button onclick="search()">🔍</button>
+  </div>
+  <div class="user-menu">Sol Fischer</div>
+</div>
+
+<div id="main">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-header">NAVIGATION</div>
+      <div class="sidebar-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+      <div class="sidebar-item" onclick="showPage('accounts')">👥 Accounts</div>
+      <div class="sidebar-item" onclick="showPage('entities')">📍 Entities</div>
+      <div class="sidebar-item" onclick="showPage('contacts')">☎️ Contacts</div>
+      <div class="sidebar-item" onclick="showPage('policies')">📋 Policies</div>
+      <div class="sidebar-item" onclick="showPage('tasks')">✓ Tasks</div>
+      <div class="sidebar-item" onclick="showPage('pipeline')">🎯 Pipeline</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div>
+        <div class="breadcrumb" id="breadcrumb"></div>
+        <div class="page-title" id="page-title">Dashboard</div>
+      </div>
+      <div>
+        <button class="button button-primary" onclick="openNewAccountModal()">+ New Account</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+      
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page">
+        <div class="grid-3col">
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-accounts">0</div>
+            <div class="kpi-label">Active Accounts</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-premium">$0</div>
+            <div class="kpi-label">Total Premium</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-commission">$0</div>
+            <div class="kpi-label">Total Commission</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="list-view">
+            <div class="list-header">
+              <div class="list-title">🔴 Urgent: Expiring Policies (30 Days)</div>
+            </div>
+            <div class="list-body" id="dashboard-urgent"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="list-view">
+            <div class="list-header">
+              <div class="list-title">📈 Top Accounts by Premium</div>
+            </div>
+            <div class="list-body" id="dashboard-top-accounts"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTS LIST -->
+      <div id="page-accounts" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div class="list-title">Accounts</div>
+            <button class="button button-primary" onclick="openNewAccountModal()">+ Add Account</button>
+          </div>
+          <div class="list-body" id="accounts-list"></div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT DETAIL -->
+      <div id="page-account-detail" class="page hidden">
+        <div class="detail-page">
+          <div class="detail-main">
+            
+            <!-- Account Info Panel -->
+            <div class="panel">
+              <div class="panel-header">Account Information</div>
+              <div class="panel-body">
+                <div class="field-group">
+                  <div class="field-label">Account Name</div>
+                  <div class="field-value" id="detail-name"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Industry</div>
+                  <div class="field-value" id="detail-industry"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Stage</div>
+                  <div id="detail-stage"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Email</div>
+                  <div class="field-value" id="detail-email"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Phone</div>
+                  <div class="field-value" id="detail-phone"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Annual Premium</div>
+                  <div class="field-value" id="detail-premium">$0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Entities Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                Properties & Entities
+                <button class="button" onclick="openNewEntityModal()">+</button>
+              </div>
+              <div class="panel-body">
+                <div class="entity-grid" id="detail-entities"></div>
+              </div>
+            </div>
+
+            <!-- Contacts Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                Contacts
+                <button class="button" onclick="openNewContactModal()">+</button>
+              </div>
+              <div class="panel-body" id="detail-contacts" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Policies Panel -->
+            <div class="panel">
+              <div class="panel-header">
+                Policies
+                <button class="button" onclick="openNewPolicyModal()">+</button>
+              </div>
+              <div class="panel-body" id="detail-policies" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="panel">
+              <div class="panel-header">Activity & Notes</div>
+              <div class="panel-body">
+                <div class="activity-timeline" id="detail-activity" style="max-height: 400px; overflow-y: auto;"></div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
+                  <textarea id="note-input" placeholder="Add a note..." style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; height: 60px;"></textarea>
+                  <button class="button button-primary" onclick="addNote()" style="margin-top: 8px; width: 100%;">Add Note</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-sidebar">
+            <!-- Quick Stats -->
+            <div class="panel">
+              <div class="panel-header">Quick Stats</div>
+              <div class="panel-body">
+                <div class="field-group">
+                  <div class="field-label">Entities</div>
+                  <div class="field-value" id="stat-entities">0</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Policies</div>
+                  <div class="field-value" id="stat-policies">0</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Commission Rate</div>
+                  <div class="field-value" id="stat-commission-rate">0%</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Related Tasks -->
+            <div class="panel">
+              <div class="panel-header">Tasks</div>
+              <div class="related-list" id="related-tasks"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTITIES -->
+      <div id="page-entities" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div class="list-title">Entities / Properties / LLCs</div>
+            <button class="button button-primary" onclick="openNewEntityModal()">+ Add Entity</button>
+          </div>
+          <div class="list-body" id="entities-list"></div>
+        </div>
+      </div>
+
+      <!-- CONTACTS -->
+      <div id="page-contacts" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div class="list-title">Contacts</div>
+            <button class="button button-primary" onclick="openNewContactModal()">+ Add Contact</button>
+          </div>
+          <div class="list-body" id="contacts-list"></div>
+        </div>
+      </div>
+
+      <!-- POLICIES -->
+      <div id="page-policies" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div class="list-title">All Policies</div>
+            <button class="button button-primary" onclick="openNewPolicyModal()">+ Add Policy</button>
+          </div>
+          <div class="list-body" id="policies-list"></div>
+        </div>
+      </div>
+
+      <!-- TASKS -->
+      <div id="page-tasks" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div class="list-title">Tasks</div>
+            <button class="button button-primary" onclick="openNewTaskModal()">+ New Task</button>
+          </div>
+          <div class="list-body" id="tasks-list"></div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div id="page-pipeline" class="page hidden">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+          <div class="list-view">
+            <div class="list-header">Prospect</div>
+            <div class="list-body" id="pipeline-prospect"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">Qualified</div>
+            <div class="list-body" id="pipeline-qualified"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">Proposal</div>
+            <div class="list-body" id="pipeline-proposal"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">Won</div>
+            <div class="list-body" id="pipeline-won"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-account" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Account</div>
+      <button class="modal-close" onclick="closeModal('modal-account')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Account Name *</label>
+        <input type="text" id="form-account-name" />
+      </div>
+      <div class="form-group">
+        <label>Industry</label>
+        <select id="form-account-industry">
+          <option value="">-- Select --</option>
+          <option value="Real Estate">Real Estate</option>
+          <option value="Construction">Construction</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Retail">Retail</option>
+          <option value="Technology">Technology</option>
+          <option value="Financial">Financial</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Stage</label>
+        <select id="form-account-stage">
+          <option value="Prospect">Prospect</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Proposal">Proposal</option>
+          <option value="Won">Won</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="form-account-email" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="form-account-phone" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-account')">Cancel</button>
+      <button class="button button-primary" onclick="saveAccount()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-entity" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Entity</div>
+      <button class="modal-close" onclick="closeModal('modal-entity')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Entity Name *</label>
+        <input type="text" id="form-entity-name" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="form-entity-type">
+          <option value="Property">Property</option>
+          <option value="LLC">LLC</option>
+          <option value="Subsidiary">Subsidiary</option>
+          <option value="Division">Division</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" id="form-entity-address" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-entity')">Cancel</button>
+      <button class="button button-primary" onclick="saveEntity()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-contact" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Contact</div>
+      <button class="modal-close" onclick="closeModal('modal-contact')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" id="form-contact-name" />
+      </div>
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" id="form-contact-title" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="form-contact-email" />
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="form-contact-phone" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-contact')">Cancel</button>
+      <button class="button button-primary" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-policy" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Policy</div>
+      <button class="modal-close" onclick="closeModal('modal-policy')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Risk Type *</label>
+        <select id="form-policy-risk">
+          <option value="">-- Select --</option>
+          <option value="General Liability">General Liability</option>
+          <option value="Property">Property</option>
+          <option value="Workers Comp">Workers Compensation</option>
+          <option value="Commercial Auto">Commercial Auto</option>
+          <option value="Cyber">Cyber Liability</option>
+          <option value="Professional Liability">Professional Liability</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Carrier *</label>
+        <input type="text" id="form-policy-carrier" />
+      </div>
+      <div class="form-group">
+        <label>Premium *</label>
+        <input type="number" id="form-policy-premium" step="0.01" />
+      </div>
+      <div class="form-group">
+        <label>Expiration Date *</label>
+        <input type="date" id="form-policy-expiration" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-policy')">Cancel</button>
+      <button class="button button-primary" onclick="savePolicy()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-task" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Task</div>
+      <button class="modal-close" onclick="closeModal('modal-task')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Subject *</label>
+        <input type="text" id="form-task-subject" />
+      </div>
+      <div class="form-group">
+        <label>Due Date</label>
+        <input type="date" id="form-task-duedate" />
+      </div>
+      <div class="form-group">
+        <label>Priority</label>
+        <select id="form-task-priority">
+          <option value="Normal">Normal</option>
+          <option value="High">High</option>
+          <option value="Urgent">Urgent</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-task')">Cancel</button>
+      <button class="button button-primary" onclick="saveTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://lnwokxbcwpqesdysepyz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxud29reGJjd3BxZXNkeXNlcHl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAwNDc1NzcsImV4cCI6MTg4Nzc5NzU3N30.rLJn5RBQv_gLJrKJ8gIpuiZvFqBb2Q8nzNlpZBrRHbI';
+
+let accounts = [], entities = [], contacts = [], policies = [], tasks = [], activities = [];
+let currentAccount = null;
+
+async function loadData() {
+  try {
+    const a = await fetch(`${SUPABASE_URL}/rest/v1/accounts?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (a.ok) accounts = await a.json() || [];
+    const e = await fetch(`${SUPABASE_URL}/rest/v1/entities?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (e.ok) entities = await e.json() || [];
+    const c = await fetch(`${SUPABASE_URL}/rest/v1/contacts?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (c.ok) contacts = await c.json() || [];
+    const p = await fetch(`${SUPABASE_URL}/rest/v1/policies?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (p.ok) policies = await p.json() || [];
+  } catch (e) {
+    console.error('Load error:', e);
+  }
+  renderDashboard();
+}
+
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.sidebar-item').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.remove('hidden');
+  event.target.classList.add('active');
+  
+  if (page === 'dashboard') {
+    renderDashboard();
+    document.getElementById('breadcrumb').textContent = '';
+  } else if (page === 'accounts') {
+    renderAccounts();
+    document.getElementById('breadcrumb').textContent = 'CRM';
+  } else if (page === 'entities') {
+    renderEntities();
+  } else if (page === 'contacts') {
+    renderContacts();
+  } else if (page === 'policies') {
+    renderPolicies();
+  } else if (page === 'tasks') {
+    renderTasks();
+  } else if (page === 'pipeline') {
+    renderPipeline();
+  }
+  
+  document.getElementById('page-title').textContent = page.charAt(0).toUpperCase() + page.slice(1);
+}
+
+function renderDashboard() {
+  const totalAccounts = accounts.length;
+  const totalPremium = policies.reduce((sum, p) => sum + (parseFloat(p.premium || 0)), 0);
+  const totalCommission = policies.reduce((sum, p) => sum + (parseFloat(p.premium || 0) * parseFloat(p.commissionRate || 12)) / 100, 0);
+  
+  document.getElementById('kpi-accounts').textContent = totalAccounts;
+  document.getElementById('kpi-premium').textContent = '$' + totalPremium.toLocaleString();
+  document.getElementById('kpi-commission').textContent = '$' + totalCommission.toLocaleString();
+  
+  const urgent = policies.filter(p => {
+    if (!p.expirationDate) return false;
+    const exp = new Date(p.expirationDate);
+    const daysUntil = Math.ceil((exp - new Date()) / (1000 * 60 * 60 * 24));
+    return daysUntil >= 0 && daysUntil <= 30;
+  });
+  
+  let urgentHtml = urgent.length ? urgent.map(p => {
+    const acc = accounts.find(a => a.id === p.accountId);
+    const exp = new Date(p.expirationDate);
+    const daysUntil = Math.ceil((exp - new Date()) / (1000 * 60 * 60 * 24));
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${acc?.name} - ${p.riskType}</div><div class="row-meta">Expires in ${daysUntil} days</div></div></div>`;
+  }).join('') : '<div class="list-row"><div style="color: var(--text-light);">No policies expiring in next 30 days</div></div>';
+  
+  document.getElementById('dashboard-urgent').innerHTML = urgentHtml;
+  
+  const topAccounts = accounts.slice().sort((a, b) => {
+    const premA = policies.filter(p => p.accountId === a.id).reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+    const premB = policies.filter(p => p.accountId === b.id).reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+    return premB - premA;
+  }).slice(0, 5);
+  
+  let topHtml = topAccounts.map(a => {
+    const prem = policies.filter(p => p.accountId === a.id).reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+    return `<div class="list-row" onclick="openAccount('${a.id}')"><div class="row-main"><div class="row-name">${a.name}</div><div class="row-meta">${a.industry}</div></div><div class="row-value">$${prem.toLocaleString()}</div></div>`;
+  }).join('');
+  
+  document.getElementById('dashboard-top-accounts').innerHTML = topHtml || '<div class="list-row"><div style="color: var(--text-light);">No accounts yet</div></div>';
+}
+
+function renderAccounts() {
+  const html = accounts.map(a => {
+    const prem = policies.filter(p => p.accountId === a.id).reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+    const stage = `<span class="badge badge-${a.stage?.toLowerCase() || 'prospect'}">${a.stage || 'Prospect'}</span>`;
+    return `<div class="list-row" onclick="openAccount('${a.id}')"><div class="row-main"><div class="row-name">${a.name}</div><div class="row-meta">${a.industry} • ${stage}</div></div><div class="row-value">$${prem.toLocaleString()}</div></div>`;
+  }).join('');
+  document.getElementById('accounts-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No accounts yet. Create one to get started.</div></div>';
+}
+
+function renderEntities() {
+  const html = entities.map(e => {
+    const acc = accounts.find(a => a.id === e.accountId);
+    const polCount = policies.filter(p => p.entityId === e.id).length;
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${e.name}</div><div class="row-meta">${e.entityType} • ${acc?.name}</div></div><div class="row-value">${polCount} policies</div></div>`;
+  }).join('');
+  document.getElementById('entities-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No entities yet.</div></div>';
+}
+
+function renderContacts() {
+  const html = contacts.map(c => {
+    const acc = accounts.find(a => a.id === c.accountId);
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${c.name}</div><div class="row-meta">${c.title} • ${acc?.name}</div></div></div>`;
+  }).join('');
+  document.getElementById('contacts-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No contacts yet.</div></div>';
+}
+
+function renderPolicies() {
+  const html = policies.map(p => {
+    const acc = accounts.find(a => a.id === p.accountId);
+    const comm = (parseFloat(p.premium || 0) * parseFloat(p.commissionRate || 12)) / 100;
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${acc?.name} - ${p.riskType}</div><div class="row-meta">${p.carrier} • Expires: ${p.expirationDate}</div></div><div class="row-value">$${comm.toLocaleString()}</div></div>`;
+  }).join('');
+  document.getElementById('policies-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No policies yet.</div></div>';
+}
+
+function renderTasks() {
+  const html = tasks.map(t => {
+    const priority = `<span class="badge badge-${t.priority?.toLowerCase() || 'normal'}">${t.priority || 'Normal'}</span>`;
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${t.subject}</div><div class="row-meta">Due: ${t.duedate || 'No date'} • ${priority}</div></div></div>`;
+  }).join('');
+  document.getElementById('tasks-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No tasks yet.</div></div>';
+}
+
+function renderPipeline() {
+  ['Prospect', 'Qualified', 'Proposal', 'Won'].forEach(stage => {
+    const stageAccounts = accounts.filter(a => a.stage === stage);
+    const html = stageAccounts.map(a => {
+      const prem = policies.filter(p => p.accountId === a.id).reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+      return `<div class="list-row" onclick="openAccount('${a.id}')"><div class="row-main"><div class="row-name">${a.name}</div><div class="row-meta">$${prem.toLocaleString()}</div></div></div>`;
+    }).join('');
+    document.getElementById(`pipeline-${stage.toLowerCase()}`).innerHTML = html || '<div class="list-row"><div style="font-size: 11px; color: var(--text-light);">No accounts</div></div>';
+  });
+}
+
+function openAccount(id) {
+  currentAccount = accounts.find(a => a.id === id);
+  if (!currentAccount) return;
+  
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-account-detail').classList.remove('hidden');
+  document.getElementById('breadcrumb').textContent = 'Accounts / ' + currentAccount.name;
+  document.getElementById('page-title').textContent = currentAccount.name;
+  
+  document.getElementById('detail-name').textContent = currentAccount.name;
+  document.getElementById('detail-industry').textContent = currentAccount.industry || '-';
+  document.getElementById('detail-email').textContent = currentAccount.email || '-';
+  document.getElementById('detail-phone').textContent = currentAccount.phone || '-';
+  
+  const stageBadge = `<span class="badge badge-${currentAccount.stage?.toLowerCase()}">${currentAccount.stage}</span>`;
+  document.getElementById('detail-stage').innerHTML = stageBadge;
+  
+  const accPolicies = policies.filter(p => p.accountId === id);
+  const premium = accPolicies.reduce((sum, p) => sum + parseFloat(p.premium || 0), 0);
+  const commission = accPolicies.reduce((sum, p) => sum + (parseFloat(p.premium || 0) * parseFloat(p.commissionRate || 12)) / 100, 0);
+  
+  document.getElementById('detail-premium').textContent = '$' + premium.toLocaleString();
+  document.getElementById('stat-entities').textContent = entities.filter(e => e.accountId === id).length;
+  document.getElementById('stat-policies').textContent = accPolicies.length;
+  document.getElementById('stat-commission-rate').textContent = (premium > 0 ? ((commission / premium) * 100).toFixed(1) : '0') + '%';
+  
+  // Entities
+  const accEntities = entities.filter(e => e.accountId === id);
+  document.getElementById('detail-entities').innerHTML = accEntities.map(e => {
+    const polCount = policies.filter(p => p.entityId === e.id).length;
+    return `<div class="entity-tile" onclick="alert('${e.name}')"><div class="entity-icon">📍</div><div class="entity-name">${e.name}</div><div class="entity-type">${e.entityType} • ${polCount} policies</div></div>`;
+  }).join('') || '<p style="color: var(--text-light); text-align: center;">No entities yet</p>';
+  
+  // Contacts
+  const accContacts = contacts.filter(c => c.accountId === id);
+  document.getElementById('detail-contacts').innerHTML = accContacts.map(c => {
+    return `<div class="related-item"><div><strong>${c.name}</strong><br/><small>${c.title || ''}</small><br/><small>${c.email || ''}</small></div></div>`;
+  }).join('') || '<div class="related-item"><small style="color: var(--text-light);">No contacts</small></div>';
+  
+  // Policies
+  document.getElementById('detail-policies').innerHTML = accPolicies.map(p => {
+    const comm = (parseFloat(p.premium || 0) * parseFloat(p.commissionRate || 12)) / 100;
+    return `<div class="related-item"><div><strong>${p.riskType}</strong><br/><small>${p.carrier}</small></div><div style="text-align: right;"><strong>$${comm.toLocaleString()}</strong><br/><small>${p.expirationDate}</small></div></div>`;
+  }).join('') || '<div class="related-item"><small style="color: var(--text-light);">No policies</small></div>';
+  
+  // Activities
+  const accActivities = activities.filter(a => a.accountId === id);
+  document.getElementById('detail-activity').innerHTML = accActivities.map(a => {
+    return `<div class="activity-item"><div class="activity-icon">💬</div><div class="activity-content"><div class="activity-title">${a.title || 'Note'}</div><div class="activity-text">${a.text}</div><div class="activity-time">${new Date(a.timestamp).toLocaleDateString()}</div></div></div>`;
+  }).join('') || '<p style="color: var(--text-light); text-align: center;">No activity yet</p>';
+  
+  // Tasks
+  const accTasks = tasks.filter(t => t.accountId === id);
+  document.getElementById('related-tasks').innerHTML = accTasks.map(t => {
+    return `<div class="related-item"><div><strong>${t.subject}</strong><br/><small>${t.duedate || 'No date'}</small></div></div>`;
+  }).join('') || '<div class="related-item"><small style="color: var(--text-light);">No tasks</small></div>';
+}
+
+function openNewAccountModal() { document.getElementById('modal-account').classList.add('open'); }
+function openNewEntityModal() { document.getElementById('modal-entity').classList.add('open'); }
+function openNewContactModal() { document.getElementById('modal-contact').classList.add('open'); }
+function openNewPolicyModal() { document.getElementById('modal-policy').classList.add('open'); }
+function openNewTaskModal() { document.getElementById('modal-task').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function saveAccount() {
+  const name = document.getElementById('form-account-name').value;
+  if (!name) return alert('Account name required');
+  
+  const account = {
+    name, 
+    industry: document.getElementById('form-account-industry').value,
+    stage: document.getElementById('form-account-stage').value || 'Prospect',
+    email: document.getElementById('form-account-email').value,
+    phone: document.getElementById('form-account-phone').value,
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/accounts`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(account)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      account.id = data[0]?.id;
+      accounts.push(account);
+      closeModal('modal-account');
+      renderDashboard();
+      renderAccounts();
+      document.getElementById('form-account-name').value = '';
+      alert('Account created!');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function saveEntity() {
+  const name = document.getElementById('form-entity-name').value;
+  if (!name || !currentAccount) return alert('Entity name and account required');
+  
+  const entity = {
+    name,
+    accountId: currentAccount.id,
+    entityType: document.getElementById('form-entity-type').value,
+    address: document.getElementById('form-entity-address').value,
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/entities`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(entity)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      entity.id = data[0]?.id;
+      entities.push(entity);
+      closeModal('modal-entity');
+      if (currentAccount) openAccount(currentAccount.id);
+      alert('Entity created!');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function saveContact() {
+  const name = document.getElementById('form-contact-name').value;
+  if (!name || !currentAccount) return alert('Contact name and account required');
+  
+  const contact = {
+    name,
+    accountId: currentAccount.id,
+    title: document.getElementById('form-contact-title').value,
+    email: document.getElementById('form-contact-email').value,
+    phone: document.getElementById('form-contact-phone').value,
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/contacts`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(contact)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      contact.id = data[0]?.id;
+      contacts.push(contact);
+      closeModal('modal-contact');
+      if (currentAccount) openAccount(currentAccount.id);
+      alert('Contact created!');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function savePolicy() {
+  const risk = document.getElementById('form-policy-risk').value;
+  if (!risk || !currentAccount) return alert('Risk type and account required');
+  
+  const policy = {
+    accountId: currentAccount.id,
+    riskType: risk,
+    carrier: document.getElementById('form-policy-carrier').value,
+    premium: parseFloat(document.getElementById('form-policy-premium').value) || 0,
+    expirationDate: document.getElementById('form-policy-expiration').value,
+    commissionRate: 12,
+    policyStatus: 'Active',
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/policies`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(policy)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      policy.id = data[0]?.id;
+      policies.push(policy);
+      closeModal('modal-policy');
+      if (currentAccount) openAccount(currentAccount.id);
+      alert('Policy created!');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function saveTask() {
+  const subject = document.getElementById('form-task-subject').value;
+  if (!subject) return alert('Task subject required');
+  
+  const task = {
+    subject,
+    accountId: currentAccount?.id || null,
+    duedate: document.getElementById('form-task-duedate').value,
+    priority: document.getElementById('form-task-priority').value,
+    status: 'Open',
+    createdAt: new Date().toISOString()
+  };
+  
+  tasks.push(task);
+  closeModal('modal-task');
+  renderTasks();
+  alert('Task created!');
+}
+
+function addNote() {
+  const text = document.getElementById('note-input').value;
+  if (!text || !currentAccount) return alert('Note required');
+  
+  activities.push({
+    accountId: currentAccount.id,
+    title: 'Note',
+    text,
+    timestamp: new Date().toISOString()
+  });
+  
+  document.getElementById('note-input').value = '';
+  openAccount(currentAccount.id);
+}
+
+function search() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const found = accounts.find(a => a.name.toLowerCase().includes(q));
+  if (found) openAccount(found.id);
+}
+
+// Initialize
+loadData();
+</script>
+
+</body>
+</html>
