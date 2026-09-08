@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrokerDesk - Sales Central CRM</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #0066CC;
+  --primary-dark: #003D99;
+  --primary-light: #E8F4FF;
+  --text-dark: #171C1F;
+  --text-light: #5C6F7B;
+  --text-muted: #8C9BA8;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F7FA;
+  --border: #D4DADF;
+  --success: #04844B;
+  --warning: #C2741D;
+  --danger: #BA0517;
+}
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.5; color: var(--text-dark); background: var(--bg-secondary); }
+body { display: flex; flex-direction: column; }
+.top-bar { height: 56px; background: var(--primary); border-bottom: 1px solid var(--primary-dark); display: flex; align-items: center; padding: 0 24px; gap: 24px; color: white; }
+.logo { font-weight: 700; font-size: 16px; }
+.search-box { flex: 0 1 300px; display: flex; }
+.search-box input { flex: 1; padding: 8px 12px; border: none; border-radius: 4px 0 0 4px; font-size: 13px; }
+.search-box button { padding: 8px 12px; background: var(--primary-dark); color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer; }
+#main { display: flex; flex: 1; }
+.sidebar { width: 256px; background: var(--bg-primary); border-right: 1px solid var(--border); overflow-y: auto; }
+.sidebar-item { padding: 10px 16px; cursor: pointer; color: var(--text-light); border-left: 3px solid transparent; }
+.sidebar-item:hover { background: var(--bg-secondary); }
+.sidebar-item.active { border-left-color: var(--primary); color: var(--primary); font-weight: 600; background: var(--primary-light); }
+.content { flex: 1; display: flex; flex-direction: column; }
+.page-header { padding: 20px 24px; background: var(--bg-primary); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.page-title { font-size: 20px; font-weight: 700; }
+.page-content { flex: 1; overflow-y: auto; padding: 24px; }
+.grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.kpi-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; padding: 16px; text-align: center; }
+.kpi-value { font-size: 28px; font-weight: 700; color: var(--primary); }
+.kpi-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.detail-page { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+.detail-main { }
+.detail-sidebar { }
+.panel { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 20px; }
+.panel-header { padding: 12px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.panel-body { padding: 16px; }
+.field-group { margin-bottom: 16px; }
+.field-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+.field-value { font-size: 13px; color: var(--text-dark); word-break: break-word; }
+.stage-indicator { padding: 8px 12px; background: var(--bg-secondary); border-radius: 4px; font-weight: 600; display: inline-block; }
+.stage-prospect { background: #FFE8D6; color: var(--warning); }
+.stage-qualified { background: #D4E5FF; color: var(--primary); }
+.stage-quote { background: #FFF4D6; color: #CC8800; }
+.stage-proposal { background: #D4F4E8; color: var(--success); }
+.stage-negotiation { background: #E8D4FF; color: #8B00CC; }
+.stage-bound { background: #D4F4E8; color: var(--success); }
+.activity-item { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
+.activity-icon { font-size: 16px; flex-shrink: 0; }
+.activity-content { flex: 1; }
+.activity-title { font-weight: 600; font-size: 12px; }
+.activity-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.activity-text { font-size: 12px; margin-top: 4px; }
+.checkbox-item { display: flex; align-items: center; padding: 8px; margin-bottom: 8px; background: var(--bg-secondary); border-radius: 4px; }
+.checkbox-item input { margin-right: 8px; }
+.checkbox-item label { flex: 1; cursor: pointer; }
+.activity-form { padding: 12px; background: var(--bg-secondary); border-radius: 4px; margin-top: 12px; }
+.activity-form textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; font-family: inherit; min-height: 60px; }
+.activity-buttons { display: flex; gap: 8px; margin-top: 8px; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; }
+.badge-high { background: #FFE8D6; color: var(--danger); }
+.badge-medium { background: #FFF4D6; color: var(--warning); }
+.badge-low { background: #D4E5FF; color: var(--primary); }
+.button { padding: 8px 12px; border: 1px solid var(--border); background: var(--bg-primary); color: var(--text-dark); border-radius: 4px; font-weight: 600; cursor: pointer; font-size: 12px; }
+.button:hover { background: var(--bg-secondary); }
+.button-primary { background: var(--primary); color: white; border-color: var(--primary); }
+.button-primary:hover { background: var(--primary-dark); }
+.button-small { padding: 4px 8px; font-size: 11px; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg-primary); border-radius: 4px; width: 90%; max-width: 600px; max-height: 90vh; overflow: auto; }
+.modal-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-title { font-weight: 700; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px; font-family: inherit; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.hidden { display: none !important; }
+.list-view { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 4px; }
+.list-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.list-row { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.list-row:hover { background: var(--bg-secondary); }
+.row-main { flex: 1; }
+.row-name { font-weight: 600; font-size: 13px; }
+.row-meta { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.row-value { text-align: right; font-weight: 600; }
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .detail-page { grid-template-columns: 1fr; }
+  .detail-sidebar { display: none; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="logo">📊 BrokerDesk</div>
+  <div class="search-box">
+    <input type="text" id="search-input" placeholder="Search accounts..." />
+    <button onclick="search()">🔍</button>
+  </div>
+  <div style="margin-left: auto;">Sol Fischer</div>
+</div>
+
+<div id="main">
+  <div class="sidebar">
+    <div class="sidebar-item active" onclick="showPage('dashboard')">📊 Dashboard</div>
+    <div class="sidebar-item" onclick="showPage('accounts')">👥 Accounts</div>
+    <div class="sidebar-item" onclick="showPage('pipeline')">🎯 Pipeline</div>
+    <div class="sidebar-item" onclick="showPage('tasks')">✓ Tasks</div>
+    <div class="sidebar-item" onclick="showPage('activity')">📢 Activity</div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title" id="page-title">Dashboard</div>
+      <button class="button button-primary" onclick="openNewAccountModal()">+ New Opportunity</button>
+    </div>
+
+    <div class="page-content">
+      
+      <!-- DASHBOARD -->
+      <div id="page-dashboard" class="page">
+        <div class="grid-3col">
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-open">0</div>
+            <div class="kpi-label">Open Opportunities</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-pipeline">$0</div>
+            <div class="kpi-label">Total Pipeline</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-value" id="kpi-forecast">$0</div>
+            <div class="kpi-label">Forecast (Weighted)</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="list-view">
+            <div class="list-header">
+              <div style="font-weight: 700;">Pipeline Summary</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; text-align: center;">
+              <div style="padding: 16px; border-right: 1px solid var(--border);"><div style="font-size: 20px; font-weight: 700; color: var(--warning);" id="stage-prospect">0</div><small>Prospect</small></div>
+              <div style="padding: 16px; border-right: 1px solid var(--border);"><div style="font-size: 20px; font-weight: 700; color: var(--primary);" id="stage-qualified">0</div><small>Qualified</small></div>
+              <div style="padding: 16px; border-right: 1px solid var(--border);"><div style="font-size: 20px; font-weight: 700; color: #CC8800;" id="stage-quote">0</div><small>Quote</small></div>
+              <div style="padding: 16px; border-right: 1px solid var(--border);"><div style="font-size: 20px; font-weight: 700; color: #8B00CC;" id="stage-proposal">0</div><small>Proposal</small></div>
+              <div style="padding: 16px; border-right: 1px solid var(--border);"><div style="font-size: 20px; font-weight: 700; color: var(--warning);" id="stage-negotiation">0</div><small>Negotiation</small></div>
+              <div style="padding: 16px;"><div style="font-size: 20px; font-weight: 700; color: var(--success);" id="stage-bound">0</div><small>Bound</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="list-view">
+            <div class="list-header">🔴 Overdue Activities</div>
+            <div class="list-body" id="overdue-activities" style="max-height: 300px; overflow-y: auto;"></div>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+          <div class="list-view">
+            <div class="list-header">📊 Accounts by Stage</div>
+            <div class="list-body" id="accounts-by-stage" style="max-height: 300px; overflow-y: auto;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCOUNTS LIST -->
+      <div id="page-accounts" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">
+            <div style="font-weight: 700;">All Accounts</div>
+            <button class="button button-primary" onclick="openNewAccountModal()">+ New</button>
+          </div>
+          <div class="list-body" id="accounts-list"></div>
+        </div>
+      </div>
+
+      <!-- ACCOUNT DETAIL -->
+      <div id="page-account-detail" class="page hidden">
+        <div class="detail-page">
+          <div class="detail-main">
+            
+            <!-- Basic Info -->
+            <div class="panel">
+              <div class="panel-header">Account Information</div>
+              <div class="panel-body">
+                <div class="field-group">
+                  <div class="field-label">Account Name</div>
+                  <div class="field-value" id="detail-name"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Stage</div>
+                  <div id="detail-stage" style="display: inline-block;"></div>
+                  <button class="button button-small" onclick="openStageChangeModal()" style="margin-left: 8px;">Change Stage</button>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Probability %</div>
+                  <input type="number" id="detail-probability" min="0" max="100" style="width: 80px;" onchange="updateAccount()" /> %
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Expected Close Date</div>
+                  <input type="date" id="detail-close-date" onchange="updateAccount()" />
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Total Opportunity Value</div>
+                  <div class="field-value" id="detail-opportunity">$0</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Industry</div>
+                  <div class="field-value" id="detail-industry"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Contact Email</div>
+                  <div class="field-value" id="detail-email"></div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Phone</div>
+                  <div class="field-value" id="detail-phone"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stage-Specific Checklist -->
+            <div class="panel">
+              <div class="panel-header">Stage Checklist</div>
+              <div class="panel-body" id="stage-checklist"></div>
+            </div>
+
+            <!-- Entities/Properties -->
+            <div class="panel">
+              <div class="panel-header">
+                Properties & Entities
+                <button class="button button-small" onclick="openNewEntityModal()">+ Add</button>
+              </div>
+              <div class="panel-body" id="detail-entities"></div>
+            </div>
+
+            <!-- Policies/Quotes -->
+            <div class="panel">
+              <div class="panel-header">
+                Policies & Quotes
+                <button class="button button-small" onclick="openNewPolicyModal()">+ Add</button>
+              </div>
+              <div class="panel-body" id="detail-policies" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Contacts -->
+            <div class="panel">
+              <div class="panel-header">
+                Contacts
+                <button class="button button-small" onclick="openNewContactModal()">+ Add</button>
+              </div>
+              <div class="panel-body" id="detail-contacts" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="panel">
+              <div class="panel-header">Chatter - Activity Feed</div>
+              <div class="panel-body">
+                <div id="detail-activity" style="max-height: 400px; overflow-y: auto; margin-bottom: 12px;"></div>
+                <div class="activity-form">
+                  <textarea id="activity-text" placeholder="Log a call • Send an email • Post update • Add note..."></textarea>
+                  <div class="activity-buttons">
+                    <button class="button" onclick="logActivity('Call')">📞 Call</button>
+                    <button class="button" onclick="logActivity('Email')">📧 Email</button>
+                    <button class="button" onclick="logActivity('Meeting')">📅 Meeting</button>
+                    <button class="button" onclick="logActivity('Note')">📝 Note</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="detail-sidebar">
+            <!-- Key Contacts -->
+            <div class="panel">
+              <div class="panel-header">Primary Contacts</div>
+              <div class="panel-body">
+                <div class="field-group">
+                  <div class="field-label">🔑 Primary Owner</div>
+                  <select id="detail-owner" onchange="updateAccountContact('owner')" style="width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 3px;">
+                    <option value="">Select owner...</option>
+                  </select>
+                  <div id="detail-owner-info" style="margin-top: 8px; font-size: 11px;"></div>
+                </div>
+                <div class="field-group" style="margin-top: 12px;">
+                  <div class="field-label">👤 Primary Handler/Assistant</div>
+                  <select id="detail-handler" onchange="updateAccountContact('handler')" style="width: 100%; padding: 6px; border: 1px solid var(--border); border-radius: 3px;">
+                    <option value="">Select handler...</option>
+                  </select>
+                  <div id="detail-handler-info" style="margin-top: 8px; font-size: 11px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="panel">
+              <div class="panel-header">Actions</div>
+              <div class="panel-body">
+                <button class="button" onclick="openNewActivityModal()" style="width: 100%; margin-bottom: 8px;">📅 Schedule Activity</button>
+                <button class="button" onclick="openNewContactModal()" style="width: 100%; margin-bottom: 8px;">➕ Add Contact</button>
+                <button class="button" onclick="openNewEntityModal()" style="width: 100%;">📍 Add Property</button>
+              </div>
+            </div>
+
+            <!-- Next Steps -->
+            <div class="panel">
+              <div class="panel-header">Next Steps</div>
+              <div class="panel-body">
+                <div id="detail-next-steps" style="font-size: 12px;"></div>
+                <button class="button button-small" onclick="openNextStepsModal()" style="width: 100%; margin-top: 8px;">Edit</button>
+              </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="panel">
+              <div class="panel-header">Key Metrics</div>
+              <div class="panel-body">
+                <div class="field-group">
+                  <div class="field-label">Forecast Value</div>
+                  <div class="field-value" id="detail-forecast-value">$0</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Days in Stage</div>
+                  <div class="field-value" id="detail-days-in-stage">0</div>
+                </div>
+                <div class="field-group">
+                  <div class="field-label">Policies</div>
+                  <div class="field-value" id="detail-policy-count">0</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Overdue Items -->
+            <div class="panel">
+              <div class="panel-header">⚠️ Overdue</div>
+              <div class="panel-body" id="detail-overdue" style="font-size: 11px;">
+                <p style="color: var(--text-light);">No overdue items</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PIPELINE -->
+      <div id="page-pipeline" class="page hidden">
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;">
+          <div class="list-view">
+            <div class="list-header">🔵 Prospect</div>
+            <div class="list-body" id="pipeline-prospect" style="min-height: 400px;"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">🟢 Qualified</div>
+            <div class="list-body" id="pipeline-qualified" style="min-height: 400px;"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">🟡 Quote</div>
+            <div class="list-body" id="pipeline-quote" style="min-height: 400px;"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">🟣 Proposal</div>
+            <div class="list-body" id="pipeline-proposal" style="min-height: 400px;"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">🟠 Negotiation</div>
+            <div class="list-body" id="pipeline-negotiation" style="min-height: 400px;"></div>
+          </div>
+          <div class="list-view">
+            <div class="list-header">✅ Bound</div>
+            <div class="list-body" id="pipeline-bound" style="min-height: 400px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASKS -->
+      <div id="page-tasks" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">Tasks & Activities</div>
+          <div class="list-body" id="tasks-list"></div>
+        </div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div id="page-activity" class="page hidden">
+        <div class="list-view">
+          <div class="list-header">All Activity</div>
+          <div class="list-body" id="all-activity" style="max-height: 70vh; overflow-y: auto;"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-account" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">New Opportunity</div>
+      <button class="modal-close" onclick="closeModal('modal-account')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Account Name *</label>
+        <input type="text" id="form-account-name" />
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Industry</label>
+          <select id="form-account-industry">
+            <option value="">Select</option>
+            <option value="Real Estate">Real Estate</option>
+            <option value="Construction">Construction</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Retail">Retail</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Opportunity Value ($)</label>
+          <input type="number" id="form-account-value" step="0.01" />
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="form-account-email" />
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="form-account-phone" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Expected Close Date</label>
+        <input type="date" id="form-account-close" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-account')">Cancel</button>
+      <button class="button button-primary" onclick="saveAccount()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-stage" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Change Stage</div>
+      <button class="modal-close" onclick="closeModal('modal-stage')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>New Stage</label>
+        <select id="form-new-stage">
+          <option value="Prospect">Prospect</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Quote">Quote</option>
+          <option value="Proposal">Proposal</option>
+          <option value="Negotiation">Negotiation</option>
+          <option value="Bound">Bound</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reason for Change</label>
+        <textarea id="form-stage-reason" style="min-height: 80px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-stage')">Cancel</button>
+      <button class="button button-primary" onclick="changeStage()">Change Stage</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-entity" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Property/Entity</div>
+      <button class="modal-close" onclick="closeModal('modal-entity')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Property Name *</label>
+        <input type="text" id="form-entity-name" />
+      </div>
+      <div class="form-group">
+        <label>Type</label>
+        <select id="form-entity-type">
+          <option value="Property">Property</option>
+          <option value="LLC">LLC</option>
+          <option value="Subsidiary">Subsidiary</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" id="form-entity-address" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-entity')">Cancel</button>
+      <button class="button button-primary" onclick="saveEntity()">Add</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-policy" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Create Quote/Policy</div>
+      <button class="modal-close" onclick="closeModal('modal-policy')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Risk Type *</label>
+        <select id="form-policy-risk">
+          <option value="">Select</option>
+          <option value="General Liability">General Liability</option>
+          <option value="Property">Property</option>
+          <option value="Workers Comp">Workers Compensation</option>
+          <option value="Commercial Auto">Commercial Auto</option>
+          <option value="Cyber">Cyber</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Carrier</label>
+          <input type="text" id="form-policy-carrier" />
+        </div>
+        <div class="form-group">
+          <label>Premium ($)</label>
+          <input type="number" id="form-policy-premium" step="0.01" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="form-policy-status">
+          <option value="Quote">Quote</option>
+          <option value="Proposal Sent">Proposal Sent</option>
+          <option value="Negotiating">Negotiating</option>
+          <option value="Bound">Bound</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-policy')">Cancel</button>
+      <button class="button button-primary" onclick="savePolicy()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-contact" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Contact</div>
+      <button class="modal-close" onclick="closeModal('modal-contact')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" id="form-contact-name" />
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="form-contact-title" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="form-contact-email" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" id="form-contact-phone" />
+      </div>
+      <div style="background: var(--bg-secondary); padding: 12px; border-radius: 4px; margin: 12px 0;">
+        <div class="checkbox-item" style="background: transparent; margin: 0 0 8px 0;">
+          <input type="checkbox" id="form-contact-owner" />
+          <label style="margin-bottom: 0;">🔑 Primary Owner/Decision Maker</label>
+        </div>
+        <div class="checkbox-item" style="background: transparent; margin: 0;">
+          <input type="checkbox" id="form-contact-handler" />
+          <label style="margin-bottom: 0;">👤 Primary Handler (We Talk to This Person)</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="button" onclick="closeModal('modal-contact')">Cancel</button>
+      <button class="button button-primary" onclick="saveContact()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://lnwokxbcwpqesdysepyz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxud29reGJjd3BxZXNkeXNlcHl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAwNDc1NzcsImV4cCI6MTg4Nzc5NzU3N30.rLJn5RBQv_gLJrKJ8gIpuiZvFqBb2Q8nzNlpZBrRHbI';
+
+const STAGE_CHECKLISTS = {
+  'Prospect': ['Discovered from referral/inbound', 'Initial contact made', 'Needs qualified'],
+  'Qualified': ['Understand current coverage', 'Identify gaps', 'Schedule deeper discovery call'],
+  'Quote': ['Assess risks and exposures', 'Build quote in system', 'Review quote internally'],
+  'Proposal': ['Send proposal to client', 'Schedule review call', 'Address questions/objections'],
+  'Negotiation': ['Negotiate rates/coverage', 'Get management approval', 'Prepare for binding'],
+  'Bound': ['Issue policy', 'COI sent to client', 'Set renewal reminder', 'Welcome call']
+};
+
+const NEXT_STEP_DEFAULTS = {
+  'Prospect': 'Call to qualify needs and understand current coverage',
+  'Qualified': 'Build custom quote based on risk assessment',
+  'Quote': 'Send proposal and schedule review meeting',
+  'Proposal': 'Address objections and finalize terms',
+  'Negotiation': 'Bind policy and issue certificates',
+  'Bound': 'Schedule 90-day renewal review'
+};
+
+let accounts = [], entities = [], contacts = [], policies = [], activities = [];
+let currentAccount = null;
+
+async function loadData() {
+  try {
+    const a = await fetch(`${SUPABASE_URL}/rest/v1/accounts?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (a.ok) accounts = await a.json() || [];
+    const e = await fetch(`${SUPABASE_URL}/rest/v1/entities?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (e.ok) entities = await e.json() || [];
+    const c = await fetch(`${SUPABASE_URL}/rest/v1/contacts?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (c.ok) contacts = await c.json() || [];
+    const p = await fetch(`${SUPABASE_URL}/rest/v1/policies?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    if (p.ok) policies = await p.json() || [];
+  } catch (e) {
+    console.error('Load error:', e);
+  }
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const openAccounts = accounts.filter(a => a.stage !== 'Bound' && a.stage !== 'Lost');
+  const totalPipeline = openAccounts.reduce((sum, a) => sum + (parseFloat(a.opportunityValue || 0)), 0);
+  const forecast = openAccounts.reduce((sum, a) => sum + (parseFloat(a.opportunityValue || 0) * parseFloat(a.probability || 0) / 100), 0);
+  
+  document.getElementById('kpi-open').textContent = openAccounts.length;
+  document.getElementById('kpi-pipeline').textContent = '$' + totalPipeline.toLocaleString();
+  document.getElementById('kpi-forecast').textContent = '$' + forecast.toLocaleString();
+  
+  // Stage counts
+  ['Prospect', 'Qualified', 'Quote', 'Proposal', 'Negotiation', 'Bound'].forEach(stage => {
+    const count = accounts.filter(a => a.stage === stage).length;
+    document.getElementById(`stage-${stage.toLowerCase()}`).textContent = count;
+  });
+  
+  // Accounts by stage
+  let byStageHtml = '';
+  ['Prospect', 'Qualified', 'Quote', 'Proposal', 'Negotiation', 'Bound'].forEach(stage => {
+    const stageAccounts = accounts.filter(a => a.stage === stage);
+    const total = stageAccounts.reduce((sum, a) => sum + parseFloat(a.opportunityValue || 0), 0);
+    if (stageAccounts.length > 0) {
+      byStageHtml += `<div class="list-row"><div class="row-main"><div class="row-name">${stage}</div><div class="row-meta">${stageAccounts.length} account(s)</div></div><div class="row-value">$${total.toLocaleString()}</div></div>`;
+    }
+  });
+  document.getElementById('accounts-by-stage').innerHTML = byStageHtml || '<div class="list-row"><div style="color: var(--text-light);">No accounts yet</div></div>';
+  
+  // Overdue activities
+  const overdue = activities.filter(a => a.dueDate && new Date(a.dueDate) < new Date());
+  document.getElementById('overdue-activities').innerHTML = overdue.length ? overdue.map(a => {
+    const acc = accounts.find(x => x.id === a.accountId);
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${a.subject}</div><div class="row-meta">${acc?.name} • ${new Date(a.dueDate).toLocaleDateString()}</div></div></div>`;
+  }).join('') : '<div class="list-row"><div style="color: var(--text-light);">No overdue activities</div></div>';
+}
+
+function showPage(pageName) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  
+  document.getElementById(`page-${pageName}`).classList.remove('hidden');
+  event.target.classList.add('active');
+  document.getElementById('page-title').textContent = pageName.charAt(0).toUpperCase() + pageName.slice(1);
+  
+  if (pageName === 'dashboard') {
+    renderDashboard();
+  } else if (pageName === 'accounts') {
+    renderAccounts();
+  } else if (pageName === 'pipeline') {
+    renderPipeline();
+  } else if (pageName === 'tasks') {
+    renderTasks();
+  } else if (pageName === 'activity') {
+    renderAllActivity();
+  }
+}
+
+function renderAccounts() {
+  const html = accounts.map(a => {
+    const badge = `<span class="badge badge-medium stage-${a.stage?.toLowerCase()}">${a.stage}</span>`;
+    const accContacts = contacts.filter(c => c.accountId === a.id);
+    const handler = accContacts.find(c => c.isPrimaryHandler);
+    const contactInfo = handler ? `👤 ${handler.name}` : (accContacts.length > 0 ? `📞 ${accContacts[0].name}` : '');
+    return `<div class="list-row" onclick="openAccount('${a.id}')"><div class="row-main"><div class="row-name">${a.name}</div><div class="row-meta">${badge} • ${a.industry}${contactInfo ? ' • ' + contactInfo : ''}</div></div><div class="row-value">$${parseFloat(a.opportunityValue || 0).toLocaleString()}</div></div>`;
+  }).join('');
+  document.getElementById('accounts-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No accounts</div></div>';
+}
+
+function renderPipeline() {
+  ['Prospect', 'Qualified', 'Quote', 'Proposal', 'Negotiation', 'Bound'].forEach(stage => {
+    const stageAccounts = accounts.filter(a => a.stage === stage);
+    const html = stageAccounts.map(a => {
+      const forecast = parseFloat(a.opportunityValue || 0) * parseFloat(a.probability || 0) / 100;
+      return `<div style="padding: 12px; background: var(--bg-secondary); border-radius: 4px; margin-bottom: 8px; cursor: pointer; border-left: 3px solid var(--primary);" onclick="openAccount('${a.id}')"><div style="font-weight: 600; font-size: 12px;">${a.name}</div><div style="font-size: 11px; color: var(--text-light); margin-top: 4px;">$${forecast.toLocaleString()}</div></div>`;
+    }).join('');
+    document.getElementById(`pipeline-${stage.toLowerCase()}`).innerHTML = html || '<div style="color: var(--text-light); padding: 12px; text-align: center; font-size: 11px;">No accounts</div>';
+  });
+}
+
+function renderTasks() {
+  const html = activities.filter(a => a.type === 'Task' || a.dueDate).map(a => {
+    const acc = accounts.find(x => x.id === a.accountId);
+    const isOverdue = a.dueDate && new Date(a.dueDate) < new Date();
+    const badge = isOverdue ? '<span class="badge badge-high">OVERDUE</span>' : '';
+    return `<div class="list-row"><div class="row-main"><div class="row-name">${a.subject}</div><div class="row-meta">${acc?.name} ${badge}</div></div><div class="row-value">${new Date(a.dueDate || Date.now()).toLocaleDateString()}</div></div>`;
+  }).join('');
+  document.getElementById('tasks-list').innerHTML = html || '<div class="list-row"><div style="color: var(--text-light);">No tasks</div></div>';
+}
+
+function renderAllActivity() {
+  const sorted = [...activities].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const html = sorted.slice(0, 50).map(a => {
+    const acc = accounts.find(x => x.id === a.accountId);
+    const icons = {'Call': '📞', 'Email': '📧', 'Meeting': '📅', 'Note': '📝', 'Task': '✓'};
+    return `<div class="activity-item"><div class="activity-icon">${icons[a.type] || '💬'}</div><div class="activity-content"><div class="activity-title">${a.subject}</div><div class="activity-time">${acc?.name} • ${new Date(a.timestamp).toLocaleDateString()}</div><div class="activity-text">${a.text}</div></div></div>`;
+  }).join('');
+  document.getElementById('all-activity').innerHTML = html || '<div style="padding: 16px; text-align: center; color: var(--text-light);">No activity yet</div>';
+}
+
+function openAccount(id) {
+  currentAccount = accounts.find(a => a.id === id);
+  if (!currentAccount) return;
+  
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-account-detail').classList.remove('hidden');
+  document.getElementById('page-title').textContent = currentAccount.name;
+  
+  // Basic info
+  document.getElementById('detail-name').textContent = currentAccount.name;
+  document.getElementById('detail-industry').textContent = currentAccount.industry || '-';
+  document.getElementById('detail-email').textContent = currentAccount.email || '-';
+  document.getElementById('detail-phone').textContent = currentAccount.phone || '-';
+  
+  const stageBadge = `<span class="stage-indicator stage-${currentAccount.stage?.toLowerCase()}">${currentAccount.stage}</span>`;
+  document.getElementById('detail-stage').innerHTML = stageBadge;
+  
+  // Probability and dates
+  document.getElementById('detail-probability').value = currentAccount.probability || 0;
+  document.getElementById('detail-close-date').value = currentAccount.expectedCloseDate || '';
+  
+  // Opportunity value
+  document.getElementById('detail-opportunity').textContent = '$' + parseFloat(currentAccount.opportunityValue || 0).toLocaleString();
+  const forecast = parseFloat(currentAccount.opportunityValue || 0) * parseFloat(currentAccount.probability || 0) / 100;
+  document.getElementById('detail-forecast-value').textContent = '$' + forecast.toLocaleString();
+  
+  // Days in stage
+  if (currentAccount.stageChangedDate) {
+    const days = Math.floor((new Date() - new Date(currentAccount.stageChangedDate)) / (1000 * 60 * 60 * 24));
+    document.getElementById('detail-days-in-stage').textContent = days;
+  }
+  
+  // Stage checklist
+  const checklist = STAGE_CHECKLISTS[currentAccount.stage] || [];
+  document.getElementById('stage-checklist').innerHTML = checklist.map((item, idx) => {
+    const checked = (currentAccount.checklist || {})[idx];
+    return `<div class="checkbox-item"><input type="checkbox" ${checked ? 'checked' : ''} onchange="updateChecklist(${idx})"/><label>${item}</label></div>`;
+  }).join('') || '<p style="color: var(--text-light);">No checklist for this stage</p>';
+  
+  // Entities
+  const accEntities = entities.filter(e => e.accountId === id);
+  document.getElementById('detail-entities').innerHTML = accEntities.map(e => {
+    return `<div style="padding: 8px; background: var(--bg-secondary); border-radius: 4px; margin-bottom: 8px;"><strong>${e.name}</strong><br/><small>${e.entityType}</small></div>`;
+  }).join('') || '<p style="color: var(--text-light);">No properties added yet</p>';
+  
+  // Policies
+  const accPolicies = policies.filter(p => p.accountId === id);
+  document.getElementById('detail-policies').innerHTML = accPolicies.map(p => {
+    return `<div style="padding: 8px; border-bottom: 1px solid var(--border);"><strong>${p.riskType}</strong><br/><small>${p.carrier} • $${parseFloat(p.premium || 0).toLocaleString()}</small><br/><span class="badge badge-medium">${p.status}</span></div>`;
+  }).join('') || '<p style="color: var(--text-light);">No policies yet</p>';
+  
+  document.getElementById('detail-policy-count').textContent = accPolicies.length;
+  
+  // Contacts
+  const accContacts = contacts.filter(c => c.accountId === id);
+  document.getElementById('detail-contacts').innerHTML = accContacts.map(c => {
+    const badges = (c.isPrimaryOwner ? '<span class="badge badge-high" style="font-size: 10px; margin-right: 4px;">🔑 OWNER</span>' : '') + 
+                   (c.isPrimaryHandler ? '<span class="badge badge-medium" style="font-size: 10px;">👤 HANDLER</span>' : '');
+    return `<div style="padding: 8px; border-bottom: 1px solid var(--border); font-size: 12px;"><strong>${c.name}</strong>${badges}<br/><small>${c.title || 'No title'}</small><br/><small>${c.email || 'No email'} • ${c.phone || 'No phone'}</small></div>`;
+  }).join('') || '<p style="color: var(--text-light);">No contacts</p>';
+  
+  // Populate owner/handler dropdowns
+  const ownerSelect = document.getElementById('detail-owner');
+  const handlerSelect = document.getElementById('detail-handler');
+  ownerSelect.innerHTML = '<option value="">Select owner...</option>' + accContacts.map(c => `<option value="${c.id}">${c.name}${c.title ? ' (' + c.title + ')' : ''}</option>`).join('');
+  handlerSelect.innerHTML = '<option value="">Select handler...</option>' + accContacts.map(c => `<option value="${c.id}">${c.name}${c.title ? ' (' + c.title + ')' : ''}</option>`).join('');
+  
+  // Set current selections
+  const primaryOwner = accContacts.find(c => c.isPrimaryOwner);
+  const primaryHandler = accContacts.find(c => c.isPrimaryHandler);
+  if (primaryOwner) {
+    ownerSelect.value = primaryOwner.id;
+    document.getElementById('detail-owner-info').innerHTML = `<strong>${primaryOwner.name}</strong><br/>${primaryOwner.title || ''}<br/><small>${primaryOwner.email}<br/>${primaryOwner.phone}</small>`;
+  } else {
+    document.getElementById('detail-owner-info').innerHTML = '<p style="color: var(--text-light); margin: 0;">Not assigned</p>';
+  }
+  
+  if (primaryHandler) {
+    handlerSelect.value = primaryHandler.id;
+    document.getElementById('detail-handler-info').innerHTML = `<strong>${primaryHandler.name}</strong><br/>${primaryHandler.title || ''}<br/><small>${primaryHandler.email}<br/>${primaryHandler.phone}</small>`;
+  } else {
+    document.getElementById('detail-handler-info').innerHTML = '<p style="color: var(--text-light); margin: 0;">Not assigned</p>';
+  }
+  
+  // Activity
+  const accActivities = activities.filter(a => a.accountId === id).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  document.getElementById('detail-activity').innerHTML = accActivities.map(a => {
+    const icons = {'Call': '📞', 'Email': '📧', 'Meeting': '📅', 'Note': '📝'};
+    return `<div class="activity-item"><div class="activity-icon">${icons[a.type] || '💬'}</div><div class="activity-content"><div class="activity-title">${a.subject}</div><div class="activity-time">${new Date(a.timestamp).toLocaleDateString()}</div><div class="activity-text">${a.text}</div></div></div>`;
+  }).join('') || '<p style="color: var(--text-light);">No activity yet</p>';
+  
+  // Next steps
+  document.getElementById('detail-next-steps').textContent = currentAccount.nextSteps || NEXT_STEP_DEFAULTS[currentAccount.stage];
+  
+  // Overdue
+  const overdueTasks = activities.filter(a => a.accountId === id && a.dueDate && new Date(a.dueDate) < new Date());
+  document.getElementById('detail-overdue').innerHTML = overdueTasks.length ? overdueTasks.map(t => `<div>• ${t.subject}</div>`).join('') : '<p style="color: var(--text-light);">No overdue items</p>';
+}
+
+function logActivity(type) {
+  if (!currentAccount) return alert('Select an account first');
+  const text = document.getElementById('activity-text').value;
+  if (!text) return alert('Enter activity details');
+  
+  activities.push({
+    accountId: currentAccount.id,
+    type, subject: type,
+    text,
+    timestamp: new Date().toISOString()
+  });
+  
+  document.getElementById('activity-text').value = '';
+  openAccount(currentAccount.id);
+}
+
+function openStageChangeModal() { document.getElementById('modal-stage').classList.add('open'); }
+function openNewAccountModal() { document.getElementById('modal-account').classList.add('open'); }
+function openNewEntityModal() { document.getElementById('modal-entity').classList.add('open'); }
+function openNewPolicyModal() { document.getElementById('modal-policy').classList.add('open'); }
+function openNewContactModal() { document.getElementById('modal-contact').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function saveAccount() {
+  const name = document.getElementById('form-account-name').value;
+  if (!name) return alert('Account name required');
+  
+  const account = {
+    name,
+    industry: document.getElementById('form-account-industry').value,
+    opportunityValue: parseFloat(document.getElementById('form-account-value').value) || 0,
+    probability: 25,
+    stage: 'Prospect',
+    email: document.getElementById('form-account-email').value,
+    phone: document.getElementById('form-account-phone').value,
+    expectedCloseDate: document.getElementById('form-account-close').value,
+    nextSteps: NEXT_STEP_DEFAULTS['Prospect'],
+    checklist: {},
+    stageChangedDate: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  };
+  
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/accounts`, {
+      method: 'POST',
+      headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify(account)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      account.id = data[0]?.id;
+      accounts.push(account);
+      closeModal('modal-account');
+      renderDashboard();
+      alert('Opportunity created!');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function changeStage() {
+  if (!currentAccount) return;
+  const newStage = document.getElementById('form-new-stage').value;
+  const reason = document.getElementById('form-stage-reason').value;
+  
+  currentAccount.stage = newStage;
+  currentAccount.stageChangedDate = new Date().toISOString();
+  currentAccount.nextSteps = NEXT_STEP_DEFAULTS[newStage];
+  currentAccount.checklist = {};
+  
+  activities.push({
+    accountId: currentAccount.id,
+    type: 'Note',
+    subject: `Stage Changed to ${newStage}`,
+    text: reason,
+    timestamp: new Date().toISOString()
+  });
+  
+  closeModal('modal-stage');
+  openAccount(currentAccount.id);
+  alert('Stage updated!');
+}
+
+async function saveEntity() {
+  if (!currentAccount) return alert('Select account first');
+  const name = document.getElementById('form-entity-name').value;
+  if (!name) return alert('Entity name required');
+  
+  const entity = {
+    name,
+    accountId: currentAccount.id,
+    entityType: document.getElementById('form-entity-type').value,
+    address: document.getElementById('form-entity-address').value,
+    createdAt: new Date().toISOString()
+  };
+  
+  entities.push(entity);
+  closeModal('modal-entity');
+  openAccount(currentAccount.id);
+  alert('Property added!');
+}
+
+async function savePolicy() {
+  if (!currentAccount) return alert('Select account first');
+  const risk = document.getElementById('form-policy-risk').value;
+  if (!risk) return alert('Select risk type');
+  
+  const policy = {
+    accountId: currentAccount.id,
+    riskType: risk,
+    carrier: document.getElementById('form-policy-carrier').value,
+    premium: parseFloat(document.getElementById('form-policy-premium').value) || 0,
+    status: document.getElementById('form-policy-status').value,
+    createdAt: new Date().toISOString()
+  };
+  
+  policies.push(policy);
+  closeModal('modal-policy');
+  openAccount(currentAccount.id);
+  alert('Quote created!');
+}
+
+async function saveContact() {
+  if (!currentAccount) return alert('Select account first');
+  const name = document.getElementById('form-contact-name').value;
+  if (!name) return alert('Contact name required');
+  
+  const isOwner = document.getElementById('form-contact-owner').checked;
+  const isHandler = document.getElementById('form-contact-handler').checked;
+  
+  const contact = {
+    id: 'contact_' + Date.now(),
+    name,
+    accountId: currentAccount.id,
+    title: document.getElementById('form-contact-title').value,
+    email: document.getElementById('form-contact-email').value,
+    phone: document.getElementById('form-contact-phone').value,
+    isPrimaryOwner: isOwner,
+    isPrimaryHandler: isHandler,
+    createdAt: new Date().toISOString()
+  };
+  
+  // If marking as owner, unmark others
+  if (isOwner) {
+    contacts.filter(c => c.accountId === currentAccount.id).forEach(c => c.isPrimaryOwner = false);
+  }
+  // If marking as handler, unmark others
+  if (isHandler) {
+    contacts.filter(c => c.accountId === currentAccount.id).forEach(c => c.isPrimaryHandler = false);
+  }
+  
+  contacts.push(contact);
+  closeModal('modal-contact');
+  
+  // Clear form
+  document.getElementById('form-contact-name').value = '';
+  document.getElementById('form-contact-title').value = '';
+  document.getElementById('form-contact-email').value = '';
+  document.getElementById('form-contact-phone').value = '';
+  document.getElementById('form-contact-owner').checked = false;
+  document.getElementById('form-contact-handler').checked = false;
+  
+  openAccount(currentAccount.id);
+  alert('Contact added!');
+}
+
+function updateAccount() {
+  if (!currentAccount) return;
+  currentAccount.probability = parseInt(document.getElementById('detail-probability').value) || 0;
+  currentAccount.expectedCloseDate = document.getElementById('detail-close-date').value;
+}
+
+function updateChecklist(idx) {
+  if (!currentAccount) return;
+  currentAccount.checklist = currentAccount.checklist || {};
+  currentAccount.checklist[idx] = !currentAccount.checklist[idx];
+}
+
+function updateAccountContact(type) {
+  if (!currentAccount) return;
+  const accContacts = contacts.filter(c => c.accountId === currentAccount.id);
+  
+  if (type === 'owner') {
+    const ownerId = document.getElementById('detail-owner').value;
+    accContacts.forEach(c => c.isPrimaryOwner = false);
+    const owner = contacts.find(c => c.id === ownerId);
+    if (owner) owner.isPrimaryOwner = true;
+    const primaryOwner = contacts.find(c => c.accountId === currentAccount.id && c.isPrimaryOwner);
+    if (primaryOwner) {
+      document.getElementById('detail-owner-info').innerHTML = `<strong>${primaryOwner.name}</strong><br/>${primaryOwner.title || ''}<br/><small>${primaryOwner.email}<br/>${primaryOwner.phone}</small>`;
+    }
+  } else if (type === 'handler') {
+    const handlerId = document.getElementById('detail-handler').value;
+    accContacts.forEach(c => c.isPrimaryHandler = false);
+    const handler = contacts.find(c => c.id === handlerId);
+    if (handler) handler.isPrimaryHandler = true;
+    const primaryHandler = contacts.find(c => c.accountId === currentAccount.id && c.isPrimaryHandler);
+    if (primaryHandler) {
+      document.getElementById('detail-handler-info').innerHTML = `<strong>${primaryHandler.name}</strong><br/>${primaryHandler.title || ''}<br/><small>${primaryHandler.email}<br/>${primaryHandler.phone}</small>`;
+    }
+  }
+}
+
+function search() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const found = accounts.find(a => a.name.toLowerCase().includes(q));
+  if (found) openAccount(found.id);
+}
+
+// Initialize
+loadData();
+</script>
+
+</body>
+</html>
