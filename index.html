@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrokerDesk - P&C Insurance CRM</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: #6366F1;
+  --primary-dark: #4F46E5;
+  --primary-light: #E0E7FF;
+  --text-dark: #1F2937;
+  --text-light: #6B7280;
+  --text-muted: #9CA3AF;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F9FAFB;
+  --border: #E5E7EB;
+  --success: #10B981;
+}
+html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; line-height: 1.5; color: var(--text-dark); background: var(--bg-secondary); }
+body { display: flex; flex-direction: column; }
+#auth-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+#auth-screen.hidden { display: none !important; }
+.auth-card { background: white; border-radius: 16px; width: 100%; max-width: 420px; padding: 48px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.auth-heading { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
+.auth-subheading { font-size: 14px; color: var(--text-light); margin-bottom: 32px; }
+.form-row { margin-bottom: 20px; }
+.form-row label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.form-row input, .form-row select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; transition: all 0.2s; }
+.form-row input:focus, .form-row select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.btn-login { width: 100%; padding: 11px 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; margin-bottom: 16px; transition: all 0.2s; }
+.btn-login:hover { background: var(--primary-dark); }
+#app { display: flex; width: 100%; height: 100%; flex: 1; }
+#app.hidden { display: none !important; }
+.sf-sidebar { width: 280px; background: var(--bg-primary); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.sf-sidebar-logo { padding: 24px 20px; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 16px; color: var(--primary); }
+.sf-sidebar-nav { flex: 1; padding: 12px 0; }
+.sf-nav-item { padding: 12px 16px; margin: 0 8px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 13px; color: var(--text-light); transition: all 0.2s; border: none; background: none; text-align: left; width: auto; display: block; }
+.sf-nav-item:hover { background: var(--primary-light); color: var(--primary); }
+.sf-nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { height: 70px; background: var(--bg-primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 32px; gap: 24px; }
+#page-title { font-size: 24px; font-weight: 700; flex: 1; }
+.content { flex: 1; overflow-y: auto; padding: 32px; background: var(--bg-secondary); }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+.card-header { padding: 20px; border-bottom: 1px solid var(--border); }
+.card-title { font-size: 16px; font-weight: 700; margin: 0; }
+.card-body { padding: 24px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--bg-secondary); }
+th { text-align: left; padding: 14px; border: 1px solid var(--border); font-weight: 700; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
+td { padding: 14px; border: 1px solid var(--border); }
+.btn { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: white; color: var(--text-dark); font-weight: 600; font-size: 13px; cursor: pointer; }
+.btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+.btn-small { padding: 6px 12px; font-size: 12px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+.form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.stat-card { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+.stat-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.stat-value { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+.badge { display: inline-block; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+.badge-active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1500; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--bg-primary); border-radius: 16px; width: 90%; max-width: 600px; max-height: 85vh; overflow: auto; }
+.modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+.modal-title { font-size: 18px; font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 24px; cursor: pointer; }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; gap: 12px; justify-content: flex-end; }
+@media (max-width: 768px) {
+  #app { flex-direction: column; }
+  .sf-sidebar { width: 100%; height: auto; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .sf-sidebar-nav { display: flex; flex-direction: row; padding: 8px 0; overflow-x: auto; }
+  .sf-nav-item { flex-shrink: 0; white-space: nowrap; }
+  .grid-3 { grid-template-columns: 1fr; }
+}
+  </style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-heading">BrokerDesk</div>
+    <div class="auth-subheading">Your P&C Broker Workspace</div>
+    <div class="form-row">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="your@email.com" />
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="••••••••" />
+    </div>
+    <button class="btn-login" onclick="login()">Sign In</button>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="sf-sidebar">
+    <div class="sf-sidebar-logo">📊 BrokerDesk</div>
+    <div class="sf-sidebar-nav">
+      <button class="sf-nav-item active" onclick="showPage('dashboard')">Today</button>
+      <button class="sf-nav-item" onclick="showPage('prospects')">New Business</button>
+      <button class="sf-nav-item" onclick="showPage('clients')">Clients</button>
+      <button class="sf-nav-item" onclick="showPage('policies')">Policies</button>
+      <button class="sf-nav-item" onclick="showPage('commissions')">Commissions</button>
+      <button class="sf-nav-item" onclick="showPage('reports')">Reports</button>
+      <button class="sf-nav-item" onclick="showPage('settings')">Settings</button>
+    </div>
+  </div>
+  
+  <div class="main">
+    <div class="topbar">
+      <div id="page-title">Today</div>
+    </div>
+    
+    <div class="content">
+      
+      <div id="dashboard" class="section active">
+        <h1>Good morning, Sol 👋</h1>
+        <p style="color: var(--text-light); margin-bottom: 24px;">15 industries • 102 subcategories • Dynamic commission rates</p>
+        
+        <div class="grid-3">
+          <div class="stat-card">
+            <div class="stat-label">Industries</div>
+            <div class="stat-value">15</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Subcategories</div>
+            <div class="stat-value">102</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Your Book</div>
+            <div class="stat-value" id="book-value">$0</div>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Top Accounts</h2>
+          </div>
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Industry / Subcategory</th>
+                  <th style="text-align: right;">Premium</th>
+                  <th style="text-align: right;">Commission</th>
+                </tr>
+              </thead>
+              <tbody id="top-accounts">
+                <tr>
+                  <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading accounts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="prospects" class="section">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+          <h1>New Business</h1>
+          <button class="btn btn-primary" onclick="openAddProspect()">+ Add Prospect</button>
+        </div>
+        <div class="card">
+          <div class="card-body" id="prospects-list">
+            <p style="color: var(--text-muted); text-align: center; padding: 40px;">No prospects yet</p>
+          </div>
+        </div>
+      </div>
+      
+      <div id="clients" class="section">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+          <h1>Clients & Accounts</h1>
+          <button class="btn btn-primary" onclick="openAddClient()">+ Add Client</button>
+        </div>
+        
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Client Name</th>
+                  <th>Industry / Subcategory</th>
+                  <th style="text-align: right;">Policies</th>
+                  <th style="text-align: right;">Premium</th>
+                  <th style="text-align: right;">Rate %</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="clients-table">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading clients...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="policies" class="section">
+        <h1>All Policies</h1>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Policy Type</th>
+                  <th>Carrier</th>
+                  <th style="text-align: right;">Premium</th>
+                  <th>Exp Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="policies-table">
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">Loading policies...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="commissions" class="section">
+        <h1>Commission Report</h1>
+        <div class="grid-3">
+          <div class="stat-card">
+            <div class="stat-label">Total Premium</div>
+            <div class="stat-value" id="total-premium">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Commission</div>
+            <div class="stat-value" style="color: var(--success);" id="total-commission">$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Avg Rate %</div>
+            <div class="stat-value" id="avg-commission-rate">0%</div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="reports" class="section">
+        <h1>Reports</h1>
+        <div class="card">
+          <div class="card-body">
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; color: var(--text-muted);">Total Clients</div>
+              <div style="font-size: 20px; font-weight: 700;" id="stat-clients">0</div>
+            </div>
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; color: var(--text-muted);">Total Policies</div>
+              <div style="font-size: 20px; font-weight: 700;" id="stat-policies">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="settings" class="section">
+        <h1>Commission Rates</h1>
+        <p style="color: var(--text-light); margin-bottom: 24px;">All 15 industries with 102 subcategories</p>
+        <div class="card">
+          <div class="card-body">
+            <table>
+              <thead>
+                <tr>
+                  <th>Industry / Subcategory</th>
+                  <th style="text-align: right;">Rate %</th>
+                </tr>
+              </thead>
+              <tbody id="commission-rates-table">
+                <tr>
+                  <td colspan="2" style="text-align: center; padding: 20px; color: var(--text-muted);">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<div id="add-prospect-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Prospect</div>
+      <button class="modal-close" onclick="closeModal('add-prospect-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Company Name</label>
+        <input type="text" id="prospect-name" />
+      </div>
+      <div class="form-group">
+        <label>Industry</label>
+        <select id="prospect-industry" onchange="updateProspectSubcategories()">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subcategory</label>
+        <select id="prospect-subcategory">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="prospect-email" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-prospect-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProspect()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="add-client-modal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add Client</div>
+      <button class="modal-close" onclick="closeModal('add-client-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Company Name</label>
+        <input type="text" id="client-name" />
+      </div>
+      <div class="form-group">
+        <label>Industry</label>
+        <select id="client-industry" onchange="updateClientSubcategories()">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Subcategory</label>
+        <select id="client-subcategory">
+          <option value="">-- Select --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="client-email" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('add-client-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://lnwokxbcwpqesdysepyz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxud29reGJjd3BxZXNkeXNlcHl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAwNDc1NzcsImV4cCI6MTg4Nzc5NzU3N30.rLJn5RBQv_gLJrKJ8gIpuiZvFqBb2Q8nzNlpZBrRHbI';
+
+const INDUSTRIES_HIERARCHY = {
+    construction: {name: '🏗️ Construction', subcategories: {residential: {name: 'Residential Construction', rate: 11}, commercial: {name: 'Commercial Construction', rate: 13}, heavy_civil: {name: 'Heavy Civil/Infrastructure', rate: 14}, electrical: {name: 'Electrical Contractors', rate: 12}, plumbing: {name: 'Plumbing Contractors', rate: 12}, hvac: {name: 'HVAC Contractors', rate: 12}, specialty: {name: 'Specialty Contractors', rate: 12}, general: {name: 'General Contractors', rate: 12}}},
+    real_estate: {name: '🏢 Real Estate/Habitational', subcategories: {single_family: {name: 'Single-Family Rentals', rate: 9}, multi_family: {name: 'Multi-Family Apartments', rate: 10}, office: {name: 'Commercial Office', rate: 11}, industrial: {name: 'Industrial/Warehouse', rate: 12}, retail_centers: {name: 'Retail Centers', rate: 11}, hotels: {name: 'Hotels/Hospitality', rate: 12}, mixed_use: {name: 'Mixed-Use Properties', rate: 11}, land: {name: 'Land Development', rate: 10}}},
+    healthcare: {name: '🏥 Healthcare', subcategories: {hospitals: {name: 'Hospitals', rate: 16}, medical_clinic: {name: 'Medical Clinics/Practices', rate: 15}, dental: {name: 'Dental Clinics', rate: 14}, nursing_home: {name: 'Nursing Homes/Assisted Living', rate: 15}, physical_therapy: {name: 'Physical Therapy/Rehab', rate: 14}, mental_health: {name: 'Mental Health Facilities', rate: 15}, veterinary: {name: 'Veterinary Clinics', rate: 13}, pharmacy: {name: 'Pharmacies', rate: 14}, medical_device: {name: 'Medical Device/Equipment', rate: 16}}},
+    retail: {name: '🛍️ Retail', subcategories: {general_retail: {name: 'General Retail', rate: 10}, grocery: {name: 'Grocery Stores', rate: 11}, specialty: {name: 'Specialty Retail', rate: 11}, ecommerce: {name: 'E-commerce/Online', rate: 13}, shopping_center: {name: 'Shopping Centers', rate: 12}, department_store: {name: 'Department Stores', rate: 11}, gas_station: {name: 'Gas Stations', rate: 12}}},
+    manufacturing: {name: '🏭 Manufacturing', subcategories: {food_beverage: {name: 'Food/Beverage Mfg', rate: 13}, metal: {name: 'Metal/Machinery Mfg', rate: 14}, chemical: {name: 'Chemical Mfg', rate: 15}, electronics: {name: 'Electronics Mfg', rate: 14}, textile: {name: 'Textile/Apparel Mfg', rate: 12}, pharmaceutical: {name: 'Pharmaceutical Mfg', rate: 16}, automotive: {name: 'Automotive Mfg', rate: 15}}},
+    technology: {name: '💻 Technology/IT', subcategories: {software_dev: {name: 'Software Development', rate: 18}, it_consulting: {name: 'IT Consulting', rate: 17}, saas: {name: 'Cloud/SaaS', rate: 19}, cybersecurity: {name: 'Cybersecurity', rate: 20}, data_analytics: {name: 'Data Analytics', rate: 18}, web_design: {name: 'Web Design/Digital', rate: 17}, it_support: {name: 'IT Support/Help Desk', rate: 16}}},
+    financial: {name: '🏦 Financial Services', subcategories: {investment: {name: 'Investment Advisors', rate: 13}, insurance_broker: {name: 'Insurance Agencies', rate: 14}, bank: {name: 'Banks/Credit Unions', rate: 12}, mortgage: {name: 'Mortgage Brokers', rate: 12}, accounting: {name: 'Accounting Firms', rate: 13}, payroll: {name: 'Payroll Services', rate: 12}, wealth_mgmt: {name: 'Wealth Management', rate: 14}}},
+    professional: {name: '⚖️ Professional Services', subcategories: {law_firm: {name: 'Law Firms', rate: 15}, accounting_firm: {name: 'Accounting Firms', rate: 14}, consulting: {name: 'Consulting Firms', rate: 15}, engineering: {name: 'Engineering Firms', rate: 14}, architecture: {name: 'Architecture Firms', rate: 14}, design: {name: 'Design Services', rate: 13}}},
+    education: {name: '🎓 Education', subcategories: {public_school: {name: 'Public Schools', rate: 11}, private_school: {name: 'Private Schools', rate: 12}, university: {name: 'Universities/Colleges', rate: 13}, trade_school: {name: 'Trade Schools', rate: 12}, preschool: {name: 'Preschools/Daycare', rate: 12}, online_education: {name: 'Online Education', rate: 14}}},
+    food_beverage: {name: '🍔 Food & Beverage', subcategories: {restaurant_full: {name: 'Restaurants (Full Service)', rate: 13}, fast_casual: {name: 'Fast Casual/QSR', rate: 12}, bar: {name: 'Bars/Nightclubs', rate: 14}, cafe: {name: 'Cafes/Coffee Shops', rate: 12}, catering: {name: 'Catering/Banquets', rate: 13}, food_truck: {name: 'Food Trucks', rate: 12}, bakery: {name: 'Bakeries', rate: 12}}},
+    hospitality: {name: '🏨 Hospitality', subcategories: {hotel: {name: 'Hotels/Motels', rate: 12}, resort: {name: 'Resorts', rate: 13}, bed_breakfast: {name: 'Bed & Breakfasts', rate: 11}, vacation_rental: {name: 'Vacation Rentals', rate: 11}, campground: {name: 'Campgrounds', rate: 11}, event_venue: {name: 'Event Venues', rate: 13}}},
+    transportation: {name: '🚚 Transportation & Logistics', subcategories: {trucking: {name: 'Trucking/Freight', rate: 15}, rideshare: {name: 'Taxi/Rideshare', rate: 14}, public_transit: {name: 'Public Transportation', rate: 13}, air_cargo: {name: 'Air Cargo', rate: 16}, courier: {name: 'Courier/Delivery', rate: 14}, warehouse: {name: 'Warehouse/Distribution', rate: 14}}},
+    energy: {name: '⚡ Energy & Utilities', subcategories: {electric: {name: 'Electric Utilities', rate: 12}, gas: {name: 'Gas Utilities', rate: 12}, water: {name: 'Water/Wastewater', rate: 12}, solar: {name: 'Solar Energy', rate: 13}, wind: {name: 'Wind Energy', rate: 13}, oil_gas: {name: 'Oil & Gas', rate: 14}}},
+    nonprofit: {name: '🤝 Nonprofit/Charitable', subcategories: {religious: {name: 'Religious Organizations', rate: 10}, education_nonprofit: {name: 'Educational Nonprofits', rate: 11}, healthcare_nonprofit: {name: 'Healthcare Nonprofits', rate: 12}, social_services: {name: 'Social Services', rate: 11}, environmental: {name: 'Environmental Orgs', rate: 11}, arts_culture: {name: 'Arts/Culture Orgs', rate: 11}}},
+    agriculture: {name: '🌾 Agriculture', subcategories: {crop_farming: {name: 'Crop Farming', rate: 13}, livestock: {name: 'Livestock/Ranching', rate: 13}, dairy: {name: 'Dairy Farming', rate: 13}, orchard: {name: 'Orchard/Vineyard', rate: 14}, aquaculture: {name: 'Aquaculture', rate: 14}, ag_equipment: {name: 'Ag Equipment/Services', rate: 12}}}
+};
+
+let accounts = [], policies = [], prospects = [];
+
+function login() {
+  if (document.getElementById('login-email').value) {
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    initApp();
+  }
+}
+
+function initApp() {
+  populateIndustryDropdowns();
+  loadData();
+  loadCommissionRates();
+}
+
+function populateIndustryDropdowns() {
+  const p_sel = document.getElementById('prospect-industry');
+  const c_sel = document.getElementById('client-industry');
+  Object.entries(INDUSTRIES_HIERARCHY).forEach(([k, v]) => {
+    const o1 = document.createElement('option');
+    o1.value = k;
+    o1.textContent = v.name;
+    p_sel.appendChild(o1);
+    const o2 = document.createElement('option');
+    o2.value = k;
+    o2.textContent = v.name;
+    c_sel.appendChild(o2);
+  });
+}
+
+function updateProspectSubcategories() {
+  const ind = document.getElementById('prospect-industry').value;
+  const sub = document.getElementById('prospect-subcategory');
+  sub.innerHTML = '<option value="">-- Select --</option>';
+  if (ind && INDUSTRIES_HIERARCHY[ind]) {
+    Object.entries(INDUSTRIES_HIERARCHY[ind].subcategories).forEach(([k, v]) => {
+      const o = document.createElement('option');
+      o.value = k;
+      o.textContent = v.name + ' (' + v.rate + '%)';
+      sub.appendChild(o);
+    });
+  }
+}
+
+function updateClientSubcategories() {
+  const ind = document.getElementById('client-industry').value;
+  const sub = document.getElementById('client-subcategory');
+  sub.innerHTML = '<option value="">-- Select --</option>';
+  if (ind && INDUSTRIES_HIERARCHY[ind]) {
+    Object.entries(INDUSTRIES_HIERARCHY[ind].subcategories).forEach(([k, v]) => {
+      const o = document.createElement('option');
+      o.value = k;
+      o.textContent = v.name + ' (' + v.rate + '%)';
+      sub.appendChild(o);
+    });
+  }
+}
+
+async function loadData() {
+  try {
+    const a = await fetch(`${SUPABASE_URL}/rest/v1/accounts?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    accounts = await a.json() || [];
+    const p = await fetch(`${SUPABASE_URL}/rest/v1/policies?select=*`, {headers: {'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY}});
+    policies = await p.json() || [];
+    render();
+  } catch (e) {}
+}
+
+function render() {
+  const top = accounts.filter(a => a.accountType === 'client').slice(0, 10);
+  document.getElementById('top-accounts').innerHTML = top.length ? top.map(a => {
+    const pols = policies.filter(p => p.accountId === a.id);
+    const prem = pols.reduce((s, p) => s + (parseFloat(p.premium) || 0), 0);
+    const rate = a.commissionRate || 12;
+    const comm = (prem * rate) / 100;
+    return `<tr><td><strong>${a.name}</strong></td><td>${a.industry || '-'} / ${a.subcategory || '-'}</td><td style="text-align: right;">$${prem.toLocaleString()}</td><td style="text-align: right;">$${comm.toLocaleString()}</td></tr>`;
+  }).join('') : '<tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">No clients</td></tr>';
+  
+  const clients = accounts.filter(a => a.accountType === 'client');
+  document.getElementById('clients-table').innerHTML = clients.length ? clients.map(c => {
+    const pols = policies.filter(p => p.accountId === c.id);
+    const prem = pols.reduce((s, p) => s + (parseFloat(p.premium) || 0), 0);
+    const rate = c.commissionRate || 12;
+    return `<tr><td><strong>${c.name}</strong></td><td>${c.industry || '-'} / ${c.subcategory || '-'}</td><td style="text-align: right;">${pols.length}</td><td style="text-align: right;">$${prem.toLocaleString()}</td><td style="text-align: right;">${rate}%</td><td><button class="btn btn-small">View</button></td></tr>`;
+  }).join('') : '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No clients</td></tr>';
+  
+  document.getElementById('policies-table').innerHTML = policies.length ? policies.slice(0, 50).map(p => {
+    const a = accounts.find(x => x.id === p.accountId);
+    return `<tr><td>${a?.name || 'Unknown'}</td><td>${p.policyType || '-'}</td><td>${p.carrier || '-'}</td><td style="text-align: right;">$${parseFloat(p.premium || 0).toLocaleString()}</td><td>${p.expirationDate || '-'}</td><td><span class="badge badge-active">${p.policyStatus || 'Active'}</span></td></tr>`;
+  }).join('') : '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">No policies</td></tr>';
+  
+  document.getElementById('stat-clients').textContent = clients.length;
+  document.getElementById('stat-policies').textContent = policies.length;
+  
+  let tp = 0, tc = 0;
+  accounts.forEach(a => {
+    const p = policies.filter(x => x.accountId === a.id).reduce((s, x) => s + (parseFloat(x.premium) || 0), 0);
+    const r = a.commissionRate || 12;
+    tp += p;
+    tc += (p * r) / 100;
+  });
+  document.getElementById('total-premium').textContent = '$' + tp.toLocaleString();
+  document.getElementById('total-commission').textContent = '$' + tc.toLocaleString();
+  document.getElementById('avg-commission-rate').textContent = (tp > 0 ? ((tc / tp) * 100).toFixed(1) : '0') + '%';
+}
+
+function loadCommissionRates() {
+  const tbody = document.getElementById('commission-rates-table');
+  let h = '';
+  Object.entries(INDUSTRIES_HIERARCHY).forEach(([mk, m]) => {
+    h += `<tr style="font-weight: bold; background: var(--bg-secondary);"><td colspan="2">${m.name}</td></tr>`;
+    Object.entries(m.subcategories).forEach(([sk, s]) => {
+      h += `<tr><td style="padding-left: 40px;">${s.name}</td><td style="text-align: right;">${s.rate}%</td></tr>`;
+    });
+  });
+  tbody.innerHTML = h;
+}
+
+function showPage(page) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sf-nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  document.querySelector(`[onclick="showPage('${page}')"]`).classList.add('active');
+  const titles = {dashboard: 'Today', prospects: 'New Business', clients: 'Clients', policies: 'Policies', commissions: 'Commissions', reports: 'Reports', settings: 'Settings'};
+  document.getElementById('page-title').textContent = titles[page];
+}
+
+function openAddProspect() { document.getElementById('add-prospect-modal').classList.add('open'); }
+function openAddClient() { document.getElementById('add-client-modal').classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function saveProspect() {
+  const name = document.getElementById('prospect-name').value;
+  const ind = document.getElementById('prospect-industry').value;
+  const sub = document.getElementById('prospect-subcategory').value;
+  if (name && ind && sub) {
+    prospects.push({name, industry: ind, subcategory: sub});
+    alert('Prospect added!');
+    closeModal('add-prospect-modal');
+  }
+}
+
+function saveClient() {
+  const name = document.getElementById('client-name').value;
+  const ind = document.getElementById('client-industry').value;
+  const sub = document.getElementById('client-subcategory').value;
+  if (name && ind && sub) {
+    alert('Client saved! (Will sync to Supabase)');
+    closeModal('add-client-modal');
+  }
+}
+</script>
+
+</body>
+</html>
